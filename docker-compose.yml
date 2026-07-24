@@ -1,0 +1,10 @@
+services:
+  # ── Spring Boot Backend ─────────────────────────────────────
+  backend:
+    build:
+      context: ./backend_new
+      dockerfile: Dockerfile
+    container_name: rupali-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"

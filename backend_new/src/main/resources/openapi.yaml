@@ -1,0 +1,555 @@
+openapi: 3.0.3
+info:
+  title: Property Platform API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string }
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        password: { type: string }
+      example:
+        name: Admin One
+        email: admin1@example.com
+        password: secret123
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+      example:
+        email: admin1@example.com
+        password: secret123
+    PropertyCreateRequest:
+      type: object
+      required: [title, description, location, type]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        price: { type: number, format: double }
+        rentAmount: { type: number, format: double }
+        location: { type: string }
+        size: { type: string }
+        type: { type: string, enum: [SALE, RENT] }
+      example:
+        title: Lakeside Villa
+        description: 4BHK with garden and lake view
+        price: 25000000
+        rentAmount: null
+        location: Pune
+        size: 3200 sqft
+        type: SALE
+    PropertyUpdateRequest:
+      type: object
+      required: [title, description, location, type, status]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        price: { type: number, format: double }
+        rentAmount: { type: number, format: double }
+        location: { type: string }
+        size: { type: string }
+        type: { type: string, enum: [SALE, RENT] }
+        status: { type: string, enum: [AVAILABLE, SOLD, RENTED, HIDDEN] }
+      example:
+        title: Lakeside Villa
+        description: Updated details
+        price: 25500000
+        rentAmount: null
+        location: Pune
+        size: 3200 sqft
+        type: SALE
+        status: AVAILABLE
+    PropertyResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: string }
+        price: { type: number, format: double }
+        rentAmount: { type: number, format: double }
+        location: { type: string }
+        size: { type: string }
+        type: { type: string, enum: [SALE, RENT] }
+        status: { type: string, enum: [AVAILABLE, SOLD, RENTED, HIDDEN] }
+        createdBy: { type: integer, format: int64 }
+        createdAt: { type: string, format: date-time }
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        title: Lakeside Villa
+        description: 4BHK with garden and lake view
+        price: 25000000
+        rentAmount: null
+        location: Pune
+        size: 3200 sqft
+        type: SALE
+        status: AVAILABLE
+        createdBy: 1
+        createdAt: 2026-02-17T07:40:00Z
+    PurchaseRequest:
+      type: object
+      required: [buyerName, buyerPhone, purchasePrice]
+      properties:
+        buyerName: { type: string }
+        buyerPhone: { type: string }
+        purchasePrice: { type: number, format: double }
+      example:
+        buyerName: Rahul Mehta
+        buyerPhone: "9876543210"
+        purchasePrice: 24800000
+    PurchaseResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        propertyId: { type: string, format: uuid }
+        buyerName: { type: string }
+        buyerPhone: { type: string }
+        purchasePrice: { type: number, format: double }
+        purchaseDate: { type: string, format: date-time }
+      example:
+        id: 101
+        propertyId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        buyerName: Rahul Mehta
+        buyerPhone: "9876543210"
+        purchasePrice: 24800000
+        purchaseDate: 2026-02-17T07:45:00Z
+    RentalRequest:
+      type: object
+      required: [tenantName, tenantPhone, monthlyRent, startDate]
+      properties:
+        tenantName: { type: string }
+        tenantPhone: { type: string }
+        monthlyRent: { type: number, format: double }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+      example:
+        tenantName: Ananya Shah
+        tenantPhone: "9123456789"
+        monthlyRent: 45000
+        startDate: 2026-03-01
+        endDate: 2027-02-28
+    RentalResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        propertyId: { type: string, format: uuid }
+        tenantName: { type: string }
+        tenantPhone: { type: string }
+        monthlyRent: { type: number, format: double }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+      example:
+        id: 201
+        propertyId: 7e5c2b5a-0b1a-4d5a-9b2f-1c3f2f5d8c20
+        tenantName: Ananya Shah
+        tenantPhone: "9123456789"
+        monthlyRent: 45000
+        startDate: 2026-03-01
+        endDate: 2027-02-28
+    AdminCreateRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        password: { type: string }
+      example:
+        name: Admin Two
+        email: admin2@example.com
+        password: secret456
+    AdminResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        email: { type: string, format: email }
+        role: { type: string, enum: [ADMIN, SUPER_ADMIN] }
+        createdAt: { type: string, format: date-time }
+      example:
+        id: 2
+        name: Admin Two
+        email: admin2@example.com
+        role: ADMIN
+        createdAt: 2026-02-17T07:20:00Z
+    DashboardResponse:
+      type: object
+      properties:
+        totalUsers: { type: integer, format: int64 }
+        totalProperties: { type: integer, format: int64 }
+        totalSoldProperties: { type: integer, format: int64 }
+        totalRentedProperties: { type: integer, format: int64 }
+        totalSalesRevenue: { type: number, format: double }
+        totalRentalIncome: { type: number, format: double }
+      example:
+        totalUsers: 12
+        totalProperties: 58
+        totalSoldProperties: 19
+        totalRentedProperties: 14
+        totalSalesRevenue: 145000000
+        totalRentalIncome: 680000
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp: { type: string, format: date-time }
+        status: { type: integer }
+        error: { type: string }
+        message: { type: string }
+        path: { type: string }
+      example:
+        timestamp: 2026-02-17T07:50:00Z
+        status: 400
+        error: Bad Request
+        message: Validation failed
+        path: /admin/properties
+paths:
+  /auth/register:
+    post:
+      summary: Register admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /auth/login:
+    post:
+      summary: Login and get JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /properties:
+    get:
+      summary: List available properties
+      parameters:
+        - in: query
+          name: type
+          schema: { type: string, enum: [SALE, RENT] }
+        - in: query
+          name: minPrice
+          schema: { type: number, format: double }
+        - in: query
+          name: maxPrice
+          schema: { type: number, format: double }
+        - in: query
+          name: minRent
+          schema: { type: number, format: double }
+        - in: query
+          name: maxRent
+          schema: { type: number, format: double }
+        - in: query
+          name: location
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: size
+          schema: { type: integer }
+        - in: query
+          name: sortBy
+          schema: { type: string }
+        - in: query
+          name: sortDir
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items: { $ref: '#/components/schemas/PropertyResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /properties/{id}:
+    get:
+      summary: Get available property by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PropertyResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /admin/properties:
+    post:
+      summary: Create property
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PropertyCreateRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PropertyResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /admin/properties/{id}:
+    put:
+      summary: Update property
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PropertyUpdateRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PropertyResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+    delete:
+      summary: Delete property
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /admin/properties/{id}/purchase:
+    post:
+      summary: Record purchase
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PurchaseRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PurchaseResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /admin/properties/{id}/rent:
+    post:
+      summary: Record rental
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RentalRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RentalResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /super-admin/admins:
+    post:
+      summary: Create admin
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminCreateRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminResponse' }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+    get:
+      summary: List admins
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AdminResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /super-admin/admins/{id}:
+    delete:
+      summary: Delete admin
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '204': { description: No Content }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /super-admin/dashboard:
+    get:
+      summary: Dashboard analytics
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DashboardResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }

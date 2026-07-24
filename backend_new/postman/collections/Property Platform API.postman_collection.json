@@ -1,0 +1,2618 @@
+{
+  "info": {
+    "_postman_id": "5edfbfb2-ac7a-4291-8cce-0a2fd24aafbf",
+    "name": "Property Platform API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "register",
+          "item": [
+            {
+              "name": "Register admin",
+              "id": "7bee42a8-3981-4928-a8ae-ba2617ae8a1b",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Admin One\",\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "74732935-3254-430f-a4ca-e47923aa1e80",
+                  "name": "Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Admin One\",\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/register",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+                },
+                {
+                  "id": "2dac6c6b-fb16-4c53-9709-e76b3fe718fd",
+                  "name": "Bad Request",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Admin One\",\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/register",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "c63c5833-e638-4bef-833a-6e1009a53ea5"
+        },
+        {
+          "name": "login",
+          "item": [
+            {
+              "name": "Login and get JWT",
+              "id": "16d9d7ec-890f-4b73-9eeb-1a229a2b6247",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "b7ea41a6-8d94-414a-bd07-6ea2b2cfe777",
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/login",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+                },
+                {
+                  "id": "9e30735f-71b4-4597-a3e8-28563fdc92fc",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"admin1@example.com\",\n  \"password\": \"secret123\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/login",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "7a161b5d-1396-4dab-9906-78122c863e3a"
+        }
+      ],
+      "id": "bebaa413-a3fa-4719-876e-78d6480be279"
+    },
+    {
+      "name": "properties",
+      "item": [
+        {
+          "name": "{id}",
+          "item": [
+            {
+              "name": "Get available property by id",
+              "id": "ad04ba1e-4ed5-415f-9623-776c129971aa",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/properties/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "properties",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "49a6e2d7-8a5a-4bc1-8ab9-ff8b50becb63",
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/properties/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "properties",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\",\n  \"createdBy\": 1,\n  \"createdAt\": \"2026-02-17T07:40:00Z\"\n}"
+                },
+                {
+                  "id": "81c875df-6318-45e1-a4a5-f04ba016d1cd",
+                  "name": "Not Found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/properties/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "properties",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "9e008dfc-4c2e-4e0f-81a8-41c24aeaedb1"
+        },
+        {
+          "name": "List available properties",
+          "id": "d51695ae-f3e7-4ba2-91b0-2f12b2eda405",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/properties?type=SALE&minPrice=8067.046639758595&maxPrice=8067.046639758595&minRent=8067.046639758595&maxRent=8067.046639758595&location=string&page=6155&size=6155&sortBy=string&sortDir=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "SALE"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "8067.046639758595"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "8067.046639758595"
+                },
+                {
+                  "key": "minRent",
+                  "value": "8067.046639758595"
+                },
+                {
+                  "key": "maxRent",
+                  "value": "8067.046639758595"
+                },
+                {
+                  "key": "location",
+                  "value": "string"
+                },
+                {
+                  "key": "page",
+                  "value": "6155"
+                },
+                {
+                  "key": "size",
+                  "value": "6155"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "string"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "82265903-9786-478a-968b-b3c5dea10913",
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/properties?type=SALE&minPrice=8067.046639758595&maxPrice=8067.046639758595&minRent=8067.046639758595&maxRent=8067.046639758595&location=string&page=6155&size=6155&sortBy=string&sortDir=string",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "properties"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "SALE"
+                    },
+                    {
+                      "key": "minPrice",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "maxPrice",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "minRent",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "maxRent",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "location",
+                      "value": "string"
+                    },
+                    {
+                      "key": "page",
+                      "value": "6155"
+                    },
+                    {
+                      "key": "size",
+                      "value": "6155"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "string"
+                    },
+                    {
+                      "key": "sortDir",
+                      "value": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": \"f0735a4d-6875-ab07-8172-72d8f2ddb9c6\",\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"price\": 3269.0094661577905,\n      \"rentAmount\": 4107.883621965245,\n      \"location\": \"string\",\n      \"size\": \"string\",\n      \"type\": \"SALE\",\n      \"status\": \"SOLD\",\n      \"createdBy\": 5039,\n      \"createdAt\": \"1953-03-31T00:05:26.392Z\"\n    },\n    {\n      \"id\": \"d3defba2-4440-81e5-3b1e-a2ad3f8c4145\",\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"price\": 5701.846633596257,\n      \"rentAmount\": 7351.761915699207,\n      \"location\": \"string\",\n      \"size\": \"string\",\n      \"type\": \"SALE\",\n      \"status\": \"HIDDEN\",\n      \"createdBy\": 4380,\n      \"createdAt\": \"2000-04-06T16:31:59.571Z\"\n    }\n  ]\n}"
+            },
+            {
+              "id": "d629f66b-1894-4222-9681-d916466dad45",
+              "name": "Bad Request",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/properties?type=SALE&minPrice=8067.046639758595&maxPrice=8067.046639758595&minRent=8067.046639758595&maxRent=8067.046639758595&location=string&page=6155&size=6155&sortBy=string&sortDir=string",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "properties"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "SALE"
+                    },
+                    {
+                      "key": "minPrice",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "maxPrice",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "minRent",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "maxRent",
+                      "value": "8067.046639758595"
+                    },
+                    {
+                      "key": "location",
+                      "value": "string"
+                    },
+                    {
+                      "key": "page",
+                      "value": "6155"
+                    },
+                    {
+                      "key": "size",
+                      "value": "6155"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "string"
+                    },
+                    {
+                      "key": "sortDir",
+                      "value": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+            }
+          ]
+        }
+      ],
+      "id": "c2e0b6cb-9466-4c4f-8945-be9688ae5cb8"
+    },
+    {
+      "name": "admin",
+      "item": [
+        {
+          "name": "properties",
+          "item": [
+            {
+              "name": "{id}",
+              "item": [
+                {
+                  "name": "purchase",
+                  "item": [
+                    {
+                      "name": "Record purchase",
+                      "id": "a559aab6-6b3c-40a3-92bb-e11650e5f247",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{bearerToken}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id/purchase",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id",
+                            "purchase"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "response": [
+                        {
+                          "id": "c9a52b46-224c-4017-bd80-9b0a5b9192b4",
+                          "name": "OK",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/purchase",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "purchase"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"id\": 101,\n  \"propertyId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000,\n  \"purchaseDate\": \"2026-02-17T07:45:00Z\"\n}"
+                        },
+                        {
+                          "id": "7b2f46b7-1de6-4285-8a9c-8367e8297e91",
+                          "name": "Bad Request",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/purchase",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "purchase"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Bad Request",
+                          "code": 400,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        },
+                        {
+                          "id": "75aa02bf-27aa-4ff7-9418-20a3ba3cc0ad",
+                          "name": "Unauthorized",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/purchase",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "purchase"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        },
+                        {
+                          "id": "c75d920d-9d39-459b-bbf0-86f33d85a99b",
+                          "name": "Not Found",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"buyerName\": \"Rahul Mehta\",\n  \"buyerPhone\": \"9876543210\",\n  \"purchasePrice\": 24800000\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/purchase",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "purchase"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Not Found",
+                          "code": 404,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        }
+                      ]
+                    }
+                  ],
+                  "id": "2d1ed8a0-8137-4ba9-9ac9-af1803b64f0e"
+                },
+                {
+                  "name": "rent",
+                  "item": [
+                    {
+                      "name": "Record rental",
+                      "id": "1bd51d3b-4a5e-4e5c-90fb-9a5ff77a4dc4",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{bearerToken}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id/rent",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id",
+                            "rent"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "response": [
+                        {
+                          "id": "d049c246-f948-4256-83ae-788d33120eca",
+                          "name": "OK",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/rent",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "rent"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"id\": 201,\n  \"propertyId\": \"7e5c2b5a-0b1a-4d5a-9b2f-1c3f2f5d8c20\",\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}"
+                        },
+                        {
+                          "id": "bc3f704a-21f2-4611-88ea-8dafb8131552",
+                          "name": "Bad Request",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/rent",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "rent"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Bad Request",
+                          "code": 400,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        },
+                        {
+                          "id": "fa8a00c7-cfb2-4475-a92d-b7d2180822b8",
+                          "name": "Unauthorized",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/rent",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "rent"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        },
+                        {
+                          "id": "dc4b644f-1024-43bd-9462-7d9288920d6c",
+                          "name": "Not Found",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"tenantName\": \"Ananya Shah\",\n  \"tenantPhone\": \"9123456789\",\n  \"monthlyRent\": 45000,\n  \"startDate\": \"2026-03-01\",\n  \"endDate\": \"2027-02-28\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/admin/properties/:id/rent",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "admin",
+                                "properties",
+                                ":id",
+                                "rent"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Not Found",
+                          "code": 404,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                        }
+                      ]
+                    }
+                  ],
+                  "id": "46399821-a1f9-40f8-9320-5012aace6eb5"
+                },
+                {
+                  "name": "Update property",
+                  "id": "e4edcbd8-8973-495b-85ed-160931d47cc4",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"Updated details\",\n  \"price\": 25500000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/properties/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "properties",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "669b84cd-72e1-4809-aa48-3f1627716e47",
+                      "name": "OK",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"Updated details\",\n  \"price\": 25500000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\",\n  \"createdBy\": 1,\n  \"createdAt\": \"2026-02-17T07:40:00Z\"\n}"
+                    },
+                    {
+                      "id": "a39c101a-8010-403f-ba3f-3b1358ac4eef",
+                      "name": "Bad Request",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"Updated details\",\n  \"price\": 25500000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    },
+                    {
+                      "id": "03a27539-ec48-4b0d-8062-c940f93d19d9",
+                      "name": "Unauthorized",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"Updated details\",\n  \"price\": 25500000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    },
+                    {
+                      "id": "d0fba0f9-5b8c-49f6-9325-db082aff07ef",
+                      "name": "Not Found",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"Updated details\",\n  \"price\": 25500000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Delete property",
+                  "id": "3dee0b95-3875-4cf5-8afc-16db00146b08",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/properties/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "properties",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "fe7a3724-9a16-4b3d-9c8c-a498fddb0212",
+                      "name": "No Content",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "No Content",
+                      "code": 204,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "body": ""
+                    },
+                    {
+                      "id": "bf5ecb41-f649-4e8c-a630-e1301140f5f2",
+                      "name": "Unauthorized",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    },
+                    {
+                      "id": "f73d07a4-80f7-45f0-8330-2e54b1b10f9e",
+                      "name": "Not Found",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/properties/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "properties",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "d7fc72aa-7d85-fe5d-f330-3697f38d6c5a"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "b35501d3-1773-4fca-8a84-66b1d9bcc6dc"
+            },
+            {
+              "name": "Create property",
+              "id": "274aba9c-6909-41b6-ba6d-cded3e1e6900",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/properties",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "properties"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "18444921-99a6-4a1c-9a2a-352372d1ff49",
+                  "name": "Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/properties",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "properties"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\",\n  \"status\": \"AVAILABLE\",\n  \"createdBy\": 1,\n  \"createdAt\": \"2026-02-17T07:40:00Z\"\n}"
+                },
+                {
+                  "id": "50af1348-d44c-494a-beda-14f9469bc6ec",
+                  "name": "Bad Request",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/properties",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "properties"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                },
+                {
+                  "id": "431dc91a-b29a-41d1-b3d2-9be60cdd4289",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"title\": \"Lakeside Villa\",\n  \"description\": \"4BHK with garden and lake view\",\n  \"price\": 25000000,\n  \"rentAmount\": null,\n  \"location\": \"Pune\",\n  \"size\": \"3200 sqft\",\n  \"type\": \"SALE\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/properties",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "properties"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "8d843649-9284-433b-a2d9-2d481aaac962"
+        }
+      ],
+      "id": "76fd3c92-726d-47ba-91d6-fb38b0e943c6"
+    },
+    {
+      "name": "super-admin",
+      "item": [
+        {
+          "name": "admins",
+          "item": [
+            {
+              "name": "{id}",
+              "item": [
+                {
+                  "name": "Delete admin",
+                  "id": "92c91248-b98c-48bd-ba3d-1e95001c0576",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "4204"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "2ad94d92-6838-47c4-8540-728b7a8fad4d",
+                      "name": "No Content",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/super-admin/admins/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "super-admin",
+                            "admins",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "4204"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "No Content",
+                      "code": 204,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "body": ""
+                    },
+                    {
+                      "id": "7848702f-99d7-42d7-8aa5-0f8bf9aab294",
+                      "name": "Unauthorized",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/super-admin/admins/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "super-admin",
+                            "admins",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "4204"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    },
+                    {
+                      "id": "d3f812a2-9c18-4ff9-8d19-4e9d262a69df",
+                      "name": "Not Found",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/super-admin/admins/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "super-admin",
+                            "admins",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "4204"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "59c2a68b-78bc-4666-b19c-2d84872438e2"
+            },
+            {
+              "name": "Create admin",
+              "id": "56690d6e-7596-4cf0-8293-b16dc31ec4f9",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Admin Two\",\n  \"email\": \"admin2@example.com\",\n  \"password\": \"secret456\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/super-admin/admins",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "super-admin",
+                    "admins"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "b88ff594-a5d2-401d-b487-e23675bfebd7",
+                  "name": "Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Admin Two\",\n  \"email\": \"admin2@example.com\",\n  \"password\": \"secret456\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 2,\n  \"name\": \"Admin Two\",\n  \"email\": \"admin2@example.com\",\n  \"role\": \"ADMIN\",\n  \"createdAt\": \"2026-02-17T07:20:00Z\"\n}"
+                },
+                {
+                  "id": "f40bf184-08ef-44f3-aff9-b9f465e9fdfe",
+                  "name": "Bad Request",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Admin Two\",\n  \"email\": \"admin2@example.com\",\n  \"password\": \"secret456\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                },
+                {
+                  "id": "e871235e-698a-4588-bcb7-6d47054382c6",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Admin Two\",\n  \"email\": \"admin2@example.com\",\n  \"password\": \"secret456\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "List admins",
+              "id": "44e7d3ed-2991-43ad-a186-06fceef9ae93",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/super-admin/admins",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "super-admin",
+                    "admins"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "18af0082-abb9-43f1-a90d-0b306bc3a5bc",
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"id\": 2,\n    \"name\": \"Admin Two\",\n    \"email\": \"admin2@example.com\",\n    \"role\": \"ADMIN\",\n    \"createdAt\": \"2026-02-17T07:20:00Z\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Admin Two\",\n    \"email\": \"admin2@example.com\",\n    \"role\": \"ADMIN\",\n    \"createdAt\": \"2026-02-17T07:20:00Z\"\n  }\n]"
+                },
+                {
+                  "id": "75937121-21bd-4ee8-9402-596d92f7712e",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/admins",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "admins"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "b4d2f2c1-abc7-4d70-8d45-3ee918d89d1e"
+        },
+        {
+          "name": "dashboard",
+          "item": [
+            {
+              "name": "Dashboard analytics",
+              "id": "a4ac7b06-4b4e-4bc8-ab4b-946138c31f1c",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/super-admin/dashboard",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "super-admin",
+                    "dashboard"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "8e7cd185-80cc-4b22-9b44-c380477f871b",
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/dashboard",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "dashboard"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"totalUsers\": 12,\n  \"totalProperties\": 58,\n  \"totalSoldProperties\": 19,\n  \"totalRentedProperties\": 14,\n  \"totalSalesRevenue\": 145000000,\n  \"totalRentalIncome\": 680000\n}"
+                },
+                {
+                  "id": "e67db4a0-6ca3-4808-b4ca-c087010c36fa",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/super-admin/dashboard",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "super-admin",
+                        "dashboard"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"timestamp\": \"2026-02-17T07:50:00Z\",\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed\",\n  \"path\": \"/admin/properties\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "081d0d68-d3ba-4322-8463-cd4440ce3288"
+        }
+      ],
+      "id": "2c21669d-b00d-412c-a3a6-f35c6676354d"
+    }
+  ],
+  "variable": [
+    {
+      "id": "52ef8fa6-f7dd-496f-8b11-b232a272f286",
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}

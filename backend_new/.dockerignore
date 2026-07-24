@@ -1,0 +1,13 @@
+# Ignore everything that shouldn't go into the Docker build context
+target/
+.idea/
+.mvn/wrapper/maven-wrapper.jar
+*.iws
+*.iml
+*.ipr
+.git/
+.gitignore
+.DS_Store
+.postman/
+postman/
+*.md
