@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -29,7 +29,7 @@ interface FilterState {
   priceRange?: string;
 }
 
-export default function RentPage() {
+function RentPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -315,5 +315,13 @@ export default function RentPage() {
 
       <Footer />
     </main>
+  );
+}
+
+export default function RentPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen" />}>
+      <RentPageContent />
+    </Suspense>
   );
 }

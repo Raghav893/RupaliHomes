@@ -20,6 +20,7 @@ public class CorsConfig {
         configuration.setAllowedOrigins(List.of(
                 "https://rupalihomes.com",
                 "https://www.rupalihomes.com",
+                "https://frontend-self-eight-d0bae23ihz.vercel.app",
                 "http://localhost:3000",
                 "http://127.0.0.1:3000"
         ));

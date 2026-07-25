@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -41,7 +41,7 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-export default function BuyPage() {
+function BuyPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -445,5 +445,13 @@ export default function BuyPage() {
 
       <Footer />
     </main>
+  );
+}
+
+export default function BuyPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen" />}>
+      <BuyPageContent />
+    </Suspense>
   );
 }
