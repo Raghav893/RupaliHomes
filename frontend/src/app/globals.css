@@ -164,6 +164,20 @@ body {
   overflow-x: hidden;
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hero-tabs {
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-syne), sans-serif;
 }

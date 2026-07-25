@@ -278,12 +278,12 @@ export default function HeroSearch({
   return (
     <div className="w-full max-w-full mt-8 mb-8 md:mt-20 md:mb-20 relative z-20">
       {/* Tabs */}
-      <div className="grid grid-cols-5 bg-slate-900/80 backdrop-blur-md rounded-t-lg border-b border-white/10 overflow-hidden">
+      <div className="hero-tabs grid grid-cols-3 md:grid-cols-5 bg-slate-900/80 backdrop-blur-md rounded-t-lg border-b border-white/10 overflow-hidden">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`min-w-0 flex items-center justify-center gap-1 px-1.5 py-2.5 text-[10px] leading-tight text-center md:gap-2 md:px-3 md:py-3 md:text-sm font-medium transition-colors ${
+            className={`min-w-0 min-h-11 md:min-h-0 flex items-center justify-center gap-1 px-2 py-3 text-[10px] leading-tight text-center md:gap-2 md:px-3 md:py-3 md:text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? "bg-white text-slate-900"
                 : "text-gray-300 hover:text-white hover:bg-white/10"
@@ -295,11 +295,11 @@ export default function HeroSearch({
       </div>
 
       {/* Search Bar Container */}
-      <div className="bg-white rounded-b-xl rounded-tr-xl shadow-xl p-1.5 flex flex-col md:flex-row items-center gap-1.5">
+      <div className="bg-white rounded-b-xl rounded-tr-xl shadow-xl p-1.5 flex flex-col md:flex-row items-stretch md:items-center gap-1.5">
         {/* City Selector Dropdown */}
         <div
           ref={cityRef}
-          className="relative w-full md:w-auto min-w-[150px] border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2.5 cursor-pointer hover:bg-gray-50 rounded-lg group"
+          className="relative w-full md:w-auto min-w-0 md:min-w-[150px] border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2.5 min-h-11 md:min-h-0 cursor-pointer hover:bg-gray-50 rounded-lg group"
           onClick={() => setShowCityDropdown(!showCityDropdown)}
         >
           <div className="flex items-center justify-between text-gray-700 font-bold text-sm">
@@ -347,7 +347,7 @@ export default function HeroSearch({
             onFocus={() => setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholders[currentPlaceholderIndex]}
-            className="w-full pl-10 pr-3 py-2.5 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
+            className="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
           />
 
           {/* Location Suggestions Dropdown (Delhi NCR) */}
@@ -379,19 +379,19 @@ export default function HeroSearch({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="w-full md:w-auto bg-gold hover:bg-gold-hover text-accent-dark font-semibold px-7 py-3 rounded-lg transition-colors shadow-md uppercase tracking-wide text-xs md:text-sm"
+          className="w-full md:w-auto min-h-11 md:min-h-0 bg-gold hover:bg-gold-hover text-accent-dark font-semibold px-7 py-3 rounded-lg transition-colors shadow-md uppercase tracking-wide text-xs md:text-sm"
         >
           Search
         </button>
       </div>
 
       {/* Secondary Filters Row */}
-      <div className="flex gap-3 mt-3 px-1.5 flex-nowrap md:flex-wrap overflow-x-auto no-scrollbar pb-1">
+      <div className="grid grid-cols-2 gap-3 mt-3 px-1.5 md:flex md:flex-wrap pb-1">
         {/* Budget Dropdown */}
-        <div ref={budgetRef} className="relative">
+        <div ref={budgetRef} className="relative min-w-0">
           <button
             onClick={() => setShowBudgetDropdown(!showBudgetDropdown)}
-            className="bg-white px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+            className="w-full md:w-auto min-h-11 md:min-h-0 bg-white px-3 md:px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center justify-between gap-2 hover:bg-gray-50 transition-colors"
           >
             {selectedBudget || "Budget"}
             <ChevronDown
@@ -426,10 +426,10 @@ export default function HeroSearch({
 
         {/* Configuration (BHK) Dropdown - Hidden for Plot & Commercial */}
         {activeTab !== "plot" && activeTab !== "commercial" && (
-          <div ref={configRef} className="relative">
+          <div ref={configRef} className="relative min-w-0">
             <button
               onClick={() => setShowConfigDropdown(!showConfigDropdown)}
-              className="bg-white px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+              className="w-full md:w-auto min-h-11 md:min-h-0 bg-white px-3 md:px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center justify-between gap-2 hover:bg-gray-50 transition-colors"
             >
               {configurations.find((c) => c.value === selectedConfig)?.label ||
                 "Configuration"}
@@ -465,12 +465,12 @@ export default function HeroSearch({
 
         {/* Property Type Dropdown - Hidden for Plot & Land */}
         {activeTab !== "plot" && (
-          <div ref={propertyTypeRef} className="relative">
+          <div ref={propertyTypeRef} className="relative min-w-0">
             <button
               onClick={() =>
                 setShowPropertyTypeDropdown(!showPropertyTypeDropdown)
               }
-            className="bg-white px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+            className="w-full md:w-auto min-h-11 md:min-h-0 bg-white px-3 md:px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center justify-between gap-2 hover:bg-gray-50 transition-colors"
             >
               {selectedPropertyType || "Property Type"}
               <ChevronDown
@@ -505,10 +505,10 @@ export default function HeroSearch({
 
         {/* Possession Status Dropdown - Hidden when Rent tab is active */}
         {activeTab !== "rent" && (
-          <div ref={possessionRef} className="relative">
+          <div ref={possessionRef} className="relative min-w-0">
             <button
               onClick={() => setShowPossessionDropdown(!showPossessionDropdown)}
-              className="bg-white px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+            className="w-full md:w-auto min-h-11 md:min-h-0 bg-white px-3 md:px-5 py-2.5 rounded-lg shadow-md text-xs md:text-sm font-medium text-gray-700 flex items-center justify-between gap-2 hover:bg-gray-50 transition-colors"
             >
               {selectedPossession || "Possession Status"}
               <ChevronDown
