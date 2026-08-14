@@ -13,6 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LocationAutocomplete, {
+  type SelectedLocation,
+} from "@/components/LocationAutocomplete";
 import {
   Plus,
   Edit,
@@ -49,6 +52,12 @@ import {
   ICON_PICKER_OPTIONS,
   AMENITY_ICON_MAP,
 } from "@/lib/amenities";
+import {
+  FURNISHING_OPTIONS,
+  getFurnishingIcon,
+  FURNISHING_ICON_PICKER_OPTIONS,
+  FURNISHING_ICON_NAME_MAP,
+} from "@/lib/furnishings";
 import type { LucideIcon } from "lucide-react";
 import {
   Property,
@@ -83,6 +92,38 @@ const InputField = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className="h-9 text-sm"
+    />
+  </div>
+);
+
+const LocationField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  icon: Icon,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  icon?: React.ElementType;
+  onSelect?: (result: SelectedLocation) => string;
+}) => (
+  <div className="space-y-1.5">
+    <Label className="flex items-center gap-1 text-xs font-medium text-gray-600">
+      {Icon && <Icon size={12} />} {label}
+    </Label>
+    <LocationAutocomplete
+      value={value}
+      onChange={onChange}
+      onSelect={(result) => {
+        const mapped = onSelect?.(result);
+        if (mapped !== undefined) onChange(mapped);
+      }}
+      placeholder={placeholder}
+      inputClassName="h-9 w-full rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     />
   </div>
 );
@@ -146,6 +187,46 @@ export default function AdminProjects() {
   const [formTags, setFormTags] = useState("");
   const [formFurnishingDetails, setFormFurnishingDetails] = useState("");
   const [formFurnishingStatus, setFormFurnishingStatus] = useState("");
+  const [formFurnishings, setFormFurnishings] = useState<string[]>([]);
+  const [customFurnishingName, setCustomFurnishingName] = useState("");
+  const [customFurnishingIcon, setCustomFurnishingIcon] = useState("Fan");
+  const [showFurnishingIconPicker, setShowFurnishingIconPicker] = useState(false);
+  const [customFurnishingIcons, setCustomFurnishingIcons] = useState<
+    Record<string, string>
+  >({});
+  const furnishingIconPickerRef = useRef<HTMLDivElement>(null);
+
+  const toggleFurnishing = (item: string) => {
+    setFormFurnishings((prev) =>
+      prev.includes(item)
+        ? prev.filter((f) => f !== item)
+        : [...prev, item],
+    );
+  };
+
+  const addCustomFurnishing = () => {
+    const name = customFurnishingName.trim();
+    if (!name) return;
+    if (!formFurnishings.includes(name)) {
+      setFormFurnishings((prev) => [...prev, name]);
+      setCustomFurnishingIcons((prev) => ({
+        ...prev,
+        [name]: customFurnishingIcon,
+      }));
+    }
+    setCustomFurnishingName("");
+    setCustomFurnishingIcon("Fan");
+    setShowFurnishingIconPicker(false);
+  };
+
+  const removeFurnishing = (item: string) => {
+    setFormFurnishings((prev) => prev.filter((f) => f !== item));
+    setCustomFurnishingIcons((prev) => {
+      const copy = { ...prev };
+      delete copy[item];
+      return copy;
+    });
+  };
 
   // Form state — agent & amenities
   const [formAgentName, setFormAgentName] = useState("");
@@ -217,6 +298,26 @@ export default function AdminProjects() {
 
   useEffect(() => {
     loadProperties();
+  }, []);
+
+  // Close icon pickers on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        iconPickerRef.current &&
+        !iconPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowIconPicker(false);
+      }
+      if (
+        furnishingIconPickerRef.current &&
+        !furnishingIconPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowFurnishingIconPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Read status query param from URL on mount
@@ -309,6 +410,11 @@ export default function AdminProjects() {
     setFormTags("");
     setFormFurnishingDetails("");
     setFormFurnishingStatus("");
+    setFormFurnishings([]);
+    setCustomFurnishingName("");
+    setCustomFurnishingIcon("Fan");
+    setCustomFurnishingIcons({});
+    setShowFurnishingIconPicker(false);
     setFormAgentName("");
     setFormAgentPhotoUrl("");
     setFormAmenities([]);
@@ -352,6 +458,13 @@ export default function AdminProjects() {
     setFormTags(p.tags || "");
     setFormFurnishingDetails(p.furnishingDetails || "");
     setFormFurnishingStatus(p.furnishingStatus || "");
+    const parsedFurnishings = p.furnishingDetails
+      ? p.furnishingDetails
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+    setFormFurnishings(parsedFurnishings);
     setFormAgentName(p.agentName || "");
     setFormAgentPhotoUrl(p.agentPhotoUrl || "");
     setFormAmenities(p.amenities ? p.amenities.split(",") : []);
@@ -402,7 +515,7 @@ export default function AdminProjects() {
       unitNumber: formUnitNumber ? Number(formUnitNumber) : undefined,
       availableFrom: formAvailableFrom,
       tags: formTags,
-      furnishingDetails: formFurnishingDetails,
+      furnishingDetails: formFurnishings.length > 0 ? formFurnishings.join(", ") : undefined,
       furnishingStatus: formFurnishingStatus,
       agentName: formAgentName,
       agentPhotoUrl: formAgentPhotoUrl,
@@ -670,7 +783,7 @@ export default function AdminProjects() {
               onChange={setFormTitle}
               placeholder="e.g. 2BHK Builder Floor, Sec 23A"
             />
-            <InputField
+            <LocationField
               label="Location *"
               value={formLocation}
               onChange={setFormLocation}
@@ -968,11 +1081,12 @@ export default function AdminProjects() {
                     <option value="Commercial">Commercial</option>
                   </select>
                 </div>
-                <InputField
+                <LocationField
                   label="City"
                   value={formCity}
                   onChange={setFormCity}
                   placeholder="Gurgaon"
+                  onSelect={(result) => result.city || result.name}
                 />
                 <InputField
                   label="Micro Market"
@@ -982,11 +1096,12 @@ export default function AdminProjects() {
                 />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <InputField
+                <LocationField
                   label="Locality"
                   value={formLocality}
                   onChange={setFormLocality}
                   placeholder="Sector 23A"
+                  onSelect={(result) => result.name}
                 />
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-gray-600">
@@ -1060,16 +1175,140 @@ export default function AdminProjects() {
                   </select>
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-gray-600">
+              {/* Furnishing Details Multi-Select */}
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <Label className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3 block">
                   Furnishing Details
                 </Label>
-                <Input
-                  value={formFurnishingDetails}
-                  onChange={(e) => setFormFurnishingDetails(e.target.value)}
-                  placeholder="1 Fan, 1 Geyser, 1 Light, 1 Modular Kitchen, 1 Chimney, 1 Bed, 1 Wardrobe"
-                  className="h-9 text-sm"
-                />
+
+                {/* Selected furnishings as icon chips */}
+                {formFurnishings.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {formFurnishings.map((item) => {
+                      const iconName = customFurnishingIcons[item];
+                      const Icon = iconName && FURNISHING_ICON_NAME_MAP[iconName]
+                        ? FURNISHING_ICON_NAME_MAP[iconName]
+                        : getFurnishingIcon(item);
+                      return (
+                        <span
+                          key={item}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-dark/10 text-accent-dark text-sm font-medium border border-accent-dark/20"
+                        >
+                          <Icon size={14} />
+                          {item}
+                          <button
+                            type="button"
+                            onClick={() => removeFurnishing(item)}
+                            className="ml-1 hover:text-red-500 transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Default furnishing grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {FURNISHING_OPTIONS.map((item) => {
+                    const Icon = getFurnishingIcon(item);
+                    const isSelected = formFurnishings.includes(item);
+                    return (
+                      <label
+                        key={item}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm transition-colors ${
+                          isSelected
+                            ? "border-accent-dark bg-accent-dark/5 text-accent-dark font-medium"
+                            : "border-gray-200 text-gray-600 hover:border-gray-300"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleFurnishing(item)}
+                          className="rounded border-gray-300 text-accent-dark focus:ring-accent-dark hidden"
+                        />
+                        <Icon size={16} className="flex-shrink-0" />
+                        {item}
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* Add Custom Furnishing Item */}
+                <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
+                    Add Custom Furnishing Item
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {/* Icon picker button */}
+                    <div className="relative" ref={furnishingIconPickerRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowFurnishingIconPicker(!showFurnishingIconPicker)}
+                        className="h-9 w-9 flex items-center justify-center rounded-lg border border-gray-300 hover:border-accent-dark transition-colors bg-white"
+                        title="Pick an icon"
+                      >
+                        {(() => {
+                          const PickedIcon = FURNISHING_ICON_PICKER_OPTIONS.find(
+                            (o) => o.name === customFurnishingIcon,
+                          )?.icon;
+                          return PickedIcon ? <PickedIcon size={16} /> : null;
+                        })()}
+                      </button>
+                      {showFurnishingIconPicker && (
+                        <div className="absolute left-0 top-11 z-50 bg-white rounded-xl shadow-xl border border-gray-200 p-3 w-72 max-h-60 overflow-y-auto">
+                          <p className="text-xs text-gray-400 mb-2 font-medium">
+                            Choose an icon
+                          </p>
+                          <div className="grid grid-cols-7 gap-1">
+                            {FURNISHING_ICON_PICKER_OPTIONS.map((opt) => (
+                              <button
+                                key={opt.name}
+                                type="button"
+                                onClick={() => {
+                                  setCustomFurnishingIcon(opt.name);
+                                  setShowFurnishingIconPicker(false);
+                                }}
+                                className={`p-2 rounded-lg hover:bg-accent-dark/10 transition-colors ${
+                                  customFurnishingIcon === opt.name
+                                    ? "bg-accent-dark/15 text-accent-dark"
+                                    : "text-gray-500"
+                                }`}
+                                title={opt.name}
+                              >
+                                <opt.icon size={16} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <Input
+                      value={customFurnishingName}
+                      onChange={(e) => setCustomFurnishingName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomFurnishing();
+                        }
+                      }}
+                      placeholder="e.g. 2 Ceiling Fans, King Size Bed, Study Table"
+                      className="h-9 text-sm flex-1"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={addCustomFurnishing}
+                      disabled={!customFurnishingName.trim()}
+                      className="h-9 px-4"
+                    >
+                      <Plus size={14} className="mr-1" /> Add
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* Agent Info */}

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { submitInquiry } from "@/lib/api";
 import { buildBlogSubmissionMessage } from "@/lib/blogSubmission";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 export default function SubmitBlogPage() {
   const [formData, setFormData] = useState({
@@ -275,15 +276,15 @@ export default function SubmitBlogPage() {
                 </label>
                 <div className="relative">
                   <MapPin size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
+                  <LocationAutocomplete
                     value={formData.location}
-                    onChange={handleChange}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, location: value }))
+                    }
                     placeholder="e.g. Gurgaon, Haryana"
                     required
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-accent-dark text-sm focus:outline-none focus:bg-white focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    name="location"
+                    inputClassName="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-accent-dark text-sm focus:outline-none focus:bg-white focus:border-gold focus:ring-1 focus:ring-gold transition-all"
                   />
                 </div>
               </div>

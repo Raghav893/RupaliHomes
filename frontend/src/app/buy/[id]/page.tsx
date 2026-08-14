@@ -25,6 +25,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { getAmenityIcon } from "@/lib/amenities";
+import { getFurnishingIcon } from "@/lib/furnishings";
 import { getPropertyStatusStyles } from "@/lib/propertyStatus";
 import confetti from "canvas-confetti";
 import {
@@ -527,6 +528,20 @@ export default function PropertyDetailsPage() {
                   </span>
                 </div>
               )}
+              {property.furnishingDetails &&
+                property.furnishingDetails
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+                  .map((item, i) => {
+                    const Icon = getFurnishingIcon(item);
+                    return (
+                      <div key={`furnishing-${i}`} className="flex items-center gap-4">
+                        <Icon size={24} className="text-gray-500" />
+                        <span className="text-gray-700">{item}</span>
+                      </div>
+                    );
+                  })}
               {property.availableFrom && (
                 <div className="flex items-center gap-4">
                   <CalendarDays size={24} className="text-gray-500" />

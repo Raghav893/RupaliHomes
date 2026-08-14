@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Send, CheckCircle } from "lucide-react";
 import { submitContactForm } from "@/lib/api";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useAuth } from "@/context/AuthContext";
 import PhoneOtpVerifier, { VerifiedPhone } from "@/components/PhoneOtpVerifier";
 import { normalizeIndianPhoneNumber } from "@/lib/firebase";
@@ -197,13 +198,14 @@ export default function Contact() {
                   <label className="block text-gray-400 mb-2 font-medium">
                     Location / Sector
                   </label>
-                  <input
-                    type="text"
-                    name="location"
+                  <LocationAutocomplete
                     value={formData.location}
-                    onChange={handleChange}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, location: value }))
+                    }
                     placeholder="e.g. DLF Phase 2, Sector 56"
-                    className="w-full bg-[#1A2235] border border-gray-700/50 rounded-lg px-6 py-4 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    name="location"
+                    inputClassName="w-full bg-[#1A2235] border border-gray-700/50 rounded-lg px-6 py-4 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
                   />
                 </div>
 

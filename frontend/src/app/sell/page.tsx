@@ -19,6 +19,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { submitInquiry } from "../../lib/api";
 import PhoneOtpVerifier, { VerifiedPhone } from "@/components/PhoneOtpVerifier";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { normalizeIndianPhoneNumber } from "@/lib/firebase";
 
 type Status = "idle" | "submitting" | "success";
@@ -78,6 +79,7 @@ function buildValuationMessage(
 export default function SellPropertyPage() {
   const [status, setStatus] = useState<Status>("idle");
   const [formData, setFormData] = useState(initialFormData);
+  const [cityText, setCityText] = useState("");
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [error, setError] = useState("");
   const [verifiedPhone, setVerifiedPhone] = useState<VerifiedPhone | null>(null);
@@ -339,20 +341,29 @@ export default function SellPropertyPage() {
                           size={18}
                           className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                         />
-                        <select
+                        <LocationAutocomplete
+                          value={cityText}
+                          onChange={(value) => {
+                            setCityText(value);
+                            setFormData((prev) => ({ ...prev, city: value }));
+                            setError("");
+                          }}
+                          onSelect={(result) => {
+                            setCityText(
+                              result.name === result.city
+                                ? result.name
+                                : `${result.name}, ${result.city}`,
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              city: result.city || result.name,
+                            }));
+                          }}
+                          placeholder="e.g. Gurgaon, Noida"
                           required
                           name="city"
-                          value={formData.city}
-                          onChange={handleChange}
-                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-all appearance-none cursor-pointer"
-                        >
-                          <option value="">Select City</option>
-                          <option value="Delhi">Delhi</option>
-                          <option value="Gurgaon">Gurgaon</option>
-                          <option value="Noida">Noida</option>
-                          <option value="Mumbai">Mumbai</option>
-                          <option value="Pune">Pune</option>
-                        </select>
+                          inputClassName="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-all"
+                        />
                       </div>
                     </div>
 

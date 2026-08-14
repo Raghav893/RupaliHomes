@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, ChevronDown, MapPin } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getLocationSuggestions } from "@/lib/locationSuggestions";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 const cities = [
   "All Cities",
@@ -16,66 +16,6 @@ const cities = [
   "Pune",
   "Chennai",
   "Kolkata",
-];
-
-// Delhi NCR localities used for the search autocomplete dropdown.
-// Shown when the user types at least 3 characters in the main search input.
-const delhiNcrLocations = [
-  // South & Central Delhi
-  "Saket, Delhi",
-  "Hauz Khas, Delhi",
-  "Vasant Kunj, Delhi",
-  "Vasant Vihar, Delhi",
-  "Greater Kailash, Delhi",
-  "Defence Colony, Delhi",
-  "Lajpat Nagar, Delhi",
-  "Chanakyapuri, Delhi",
-  "Connaught Place, Delhi",
-  "Karol Bagh, Delhi",
-  "Rajouri Garden, Delhi",
-  "Dwarka, Delhi",
-  "Janakpuri, Delhi",
-  "Punjabi Bagh, Delhi",
-  "Pitampura, Delhi",
-  "Rohini, Delhi",
-  "Model Town, Delhi",
-  "Mayur Vihar, Delhi",
-  "Preet Vihar, Delhi",
-  // Gurgaon
-  "Golf Course Road, Gurgaon",
-  "Golf Course Extension Road, Gurgaon",
-  "Sohna Road, Gurgaon",
-  "MG Road, Gurgaon",
-  "DLF Phase 1, Gurgaon",
-  "DLF Phase 2, Gurgaon",
-  "DLF Phase 3, Gurgaon",
-  "DLF Phase 5, Gurgaon",
-  "Sushant Lok, Gurgaon",
-  "Sector 56, Gurgaon",
-  "Sector 57, Gurgaon",
-  "Cyber City, Gurgaon",
-  "New Gurgaon, Gurgaon",
-  "Dwarka Expressway, Gurgaon",
-  "Manesar, Gurgaon",
-  // Noida & Greater Noida
-  "Sector 18, Noida",
-  "Sector 62, Noida",
-  "Sector 76, Noida",
-  "Sector 137, Noida",
-  "Noida Extension, Greater Noida",
-  "Greater Noida West, Greater Noida",
-  "Pari Chowk, Greater Noida",
-  "Yamuna Expressway, Greater Noida",
-  // Ghaziabad
-  "Indirapuram, Ghaziabad",
-  "Vaishali, Ghaziabad",
-  "Vasundhara, Ghaziabad",
-  "Raj Nagar Extension, Ghaziabad",
-  "Crossings Republik, Ghaziabad",
-  // Faridabad
-  "Sector 15, Faridabad",
-  "Neharpar, Faridabad",
-  "Greater Faridabad, Faridabad",
 ];
 
 const budgetRanges = {
@@ -137,12 +77,6 @@ export default function HeroSearch({
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [selectedPossession, setSelectedPossession] = useState("");
 
-  // Location autocomplete (Delhi NCR) — appears at 3+ characters
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  const locationSuggestions = getLocationSuggestions(searchQuery);
-
   // Notify parent of tab changes
   useEffect(() => {
     if (onTabChange) {
@@ -184,8 +118,6 @@ export default function HeroSearch({
         !possessionRef.current.contains(e.target as Node)
       )
         setShowPossessionDropdown(false);
-      if (searchRef.current && !searchRef.current.contains(e.target as Node))
-        setShowSuggestions(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -224,7 +156,6 @@ export default function HeroSearch({
   }, [activeTab]);
 
   const handleSearch = () => {
-    setShowSuggestions(false);
     // Navigate to buy or rent page with filters
     const target = activeTab === "rent" ? "/rent" : "/buy";
     const params = new URLSearchParams();
@@ -269,10 +200,6 @@ export default function HeroSearch({
 
     const queryString = params.toString();
     router.push(queryString ? `${target}?${queryString}` : target);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSearch();
   };
 
   return (
@@ -335,46 +262,17 @@ export default function HeroSearch({
         </div>
 
         {/* Main Search Input */}
-        <div ref={searchRef} className="grow w-full relative flex items-center px-2">
+        <div className="grow w-full relative flex items-center px-2">
           <Search className="text-gray-400 w-4 h-4 absolute left-3.5" />
-          <input
-            type="text"
+          <LocationAutocomplete
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={handleKeyDown}
+            onChange={setSearchQuery}
+            onEnter={handleSearch}
             placeholder={placeholders[currentPlaceholderIndex]}
-            className="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
+            inputClassName="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
           />
-
-          {/* Location Suggestions Dropdown (Delhi NCR) */}
-          {showSuggestions && searchQuery.trim().length >= 3 && (
-            <div className="absolute top-full left-2 right-2 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2 max-h-72 overflow-y-auto">
-              {locationSuggestions.length > 0 ? (
-                locationSuggestions.map((loc) => (
-                  <button
-                    key={loc}
-                    onClick={() => {
-                      setSearchQuery(loc);
-                      setShowSuggestions(false);
-                    }}
-                    className="w-full flex items-center gap-2.5 text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <MapPin size={15} className="text-gold shrink-0" />
-                    <span className="truncate">{loc}</span>
-                  </button>
-                ))
-              ) : (
-                <p className="px-4 py-2.5 text-sm text-gray-400">
-                  No locations found in Delhi NCR
-                </p>
-              )}
-            </div>
-          )}
         </div>
+
 
         {/* Search Button */}
         <button

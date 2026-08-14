@@ -11,6 +11,7 @@ import {
   DealType,
 } from "../../../types";
 import { useRouter } from "next/navigation";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 export default function AddBrochure() {
   const router = useRouter();
@@ -81,14 +82,15 @@ export default function AddBrochure() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Location *
               </label>
-              <input
-                type="text"
-                name="location"
-                required
+              <LocationAutocomplete
                 value={formData.location}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-gold-400 focus:border-gold-400"
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, location: value }))
+                }
                 placeholder="e.g. City Center"
+                required
+                name="location"
+                inputClassName="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-gold-400 focus:border-gold-400"
               />
             </div>
 
