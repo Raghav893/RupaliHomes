@@ -45,7 +45,7 @@ export default function Navbar() {
       initial="hidden"
       animate="visible"
       variants={navVariants}
-      className={`fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm py-2.5 md:py-4`}
+      className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 bg-white shadow-sm py-2.5 md:py-4`}
     >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
         <Link
@@ -53,7 +53,7 @@ export default function Navbar() {
           className="relative h-14 w-56 md:h-20 md:w-80 overflow-hidden transition-opacity hover:opacity-80"
         >
           <Image
-            src="/newlogo.png"
+            src="/logo_rupali.png"
             alt="Rupali Homes"
             fill
             className="-translate-x-5 object-cover object-center md:-translate-x-8"

@@ -193,7 +193,7 @@ export default function AdminProjects() {
     setLoading(true);
     try {
       const [data, stats] = await Promise.all([
-        fetchAdminProperties(0, 100),
+        fetchAdminProperties(0, 500),
         fetchDashboardStats(),
       ]);
       if (data && data.content) setProperties(data.content);
@@ -663,7 +663,7 @@ export default function AdminProjects() {
           </div>
 
           {/* Section 1: Core Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <InputField
               label="Title *"
               value={formTitle}
@@ -677,6 +677,26 @@ export default function AdminProjects() {
               placeholder="Panwar Housing, Gurgaon"
               icon={MapPin}
             />
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1 text-xs font-medium text-gray-600">
+                <Layers size={12} /> Property Type
+              </Label>
+              <select
+                value={formPropertyCategory}
+                onChange={(e) => setFormPropertyCategory(e.target.value)}
+                className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-accent-dark"
+              >
+                <option value="">Select...</option>
+                <option value="Builder Floor">Builder Floor</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="Plot">Plot</option>
+                <option value="Penthouse">Penthouse</option>
+                <option value="Studio">Studio</option>
+                <option value="Office Space">Office Space</option>
+                <option value="Shop">Shop</option>
+              </select>
+            </div>
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1 text-xs font-medium text-gray-600">
                 <Tag size={12} /> Listing Type
@@ -946,26 +966,6 @@ export default function AdminProjects() {
                     <option value="">Select...</option>
                     <option value="Residential">Residential</option>
                     <option value="Commercial">Commercial</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-gray-600 flex items-center gap-1">
-                    <Layers size={12} /> Property Type
-                  </Label>
-                  <select
-                    value={formPropertyCategory}
-                    onChange={(e) => setFormPropertyCategory(e.target.value)}
-                    className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-accent-dark"
-                  >
-                    <option value="">Select...</option>
-                    <option value="Builder Floor">Builder Floor</option>
-                    <option value="Apartment">Apartment</option>
-                    <option value="Villa">Villa</option>
-                    <option value="Plot">Plot</option>
-                    <option value="Penthouse">Penthouse</option>
-                    <option value="Studio">Studio</option>
-                    <option value="Office Space">Office Space</option>
-                    <option value="Shop">Shop</option>
                   </select>
                 </div>
                 <InputField

@@ -17,7 +17,7 @@ export default function HeroSvgAnimation() {
   };
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-0 opacity-10 md:opacity-20 flex items-center justify-center md:justify-end md:pr-0">
+    <div className="absolute inset-0 pointer-events-none z-0 opacity-10 md:opacity-20 flex items-center justify-center md:justify-end md:pr-0 overflow-hidden">
       <motion.svg
         width="600"
         height="600"

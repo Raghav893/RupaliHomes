@@ -18,11 +18,11 @@ import {
   Building,
   Sofa,
   CalendarDays,
-  User,
   ChevronLeft,
   ChevronRight,
   X,
   CheckCircle,
+  ChevronDown,
 } from "lucide-react";
 import { getAmenityIcon } from "@/lib/amenities";
 import { getPropertyStatusStyles } from "@/lib/propertyStatus";
@@ -38,6 +38,30 @@ import { Property, PropertyType } from "@/types";
 import { formatIndianPrice } from "@/lib/utils";
 import PhoneOtpVerifier, { VerifiedPhone } from "@/components/PhoneOtpVerifier";
 import { normalizeIndianPhoneNumber } from "@/lib/firebase";
+import Navbar from "@/components/Navbar";
+
+const faqs = [
+  {
+    q: "Who is Rupali Homes?",
+    a: "Rupali Homes is India's premier luxury real estate consultancy. We help discerning buyers and renters find the finest residential and commercial properties across Gurugram and the wider Delhi NCR region.",
+  },
+  {
+    q: "How do I book a site visit for this property?",
+    a: "Simply fill in the 'Book a Visit' form on this page with your name and phone number, and verify your number with the one-time password (OTP). Our team will contact you shortly to schedule the visit at your convenience.",
+  },
+  {
+    q: "What types of properties does Rupali Homes offer?",
+    a: "We offer a wide range of properties including residential apartments, independent villas, premium builder floors, plots & land, and commercial spaces across prime locations in Delhi NCR.",
+  },
+  {
+    q: "Are the listings on Rupali Homes verified?",
+    a: "Yes, our team carefully verifies every listing, including the documentation, location, and property details, so you can search and compare with confidence.",
+  },
+  {
+    q: "How can I contact Rupali Homes for more information?",
+    a: "You can reach us at +91 9310831272 or email support@rupalihomes.com. Our office is located at the 3rd & 4th Floor, Knowledge Center, M3M Broadway, Sector 71, Gurugram, Haryana 122101.",
+  },
+];
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
@@ -51,6 +75,8 @@ export default function PropertyDetailsPage() {
   const [fired, setFired] = useState(false);
   const [showFireAnimation, setShowFireAnimation] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [showGallery, setShowGallery] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [otherProperties, setOtherProperties] = useState<Property[]>([]);
@@ -178,7 +204,8 @@ export default function PropertyDetailsPage() {
   ].filter(Boolean) as string[];
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8] pt-24 pb-12">
+    <div className="min-h-screen bg-[#FDFCF8] pt-28 md:pt-36 pb-12">
+      <Navbar />
       {/* Navigation Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 mb-6">
         <Link
@@ -395,32 +422,41 @@ export default function PropertyDetailsPage() {
           </div>
 
           {/* Specs Grid */}
-          <div className="grid grid-cols-3 gap-4 py-6 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="grid grid-cols-4 gap-2 sm:gap-4 p-4 sm:p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="flex flex-col items-center justify-center border-r border-gray-100">
-              <Bed size={28} className="text-gray-400 mb-2" />
-              <span className="text-2xl font-bold text-accent-dark">
+              <Bed className="size-6 sm:size-7 text-gray-400 mb-2" />
+              <span className="text-lg sm:text-2xl font-bold text-accent-dark">
                 {property.bedrooms || 3}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-widest">
+              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest">
                 Beds
               </span>
             </div>
             <div className="flex flex-col items-center justify-center border-r border-gray-100">
-              <Bath size={28} className="text-gray-400 mb-2" />
-              <span className="text-2xl font-bold text-accent-dark">
+              <Bath className="size-6 sm:size-7 text-gray-400 mb-2" />
+              <span className="text-lg sm:text-2xl font-bold text-accent-dark">
                 {property.bathrooms || 2}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-widest">
+              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest">
                 Baths
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center">
-              <Maximize size={28} className="text-gray-400 mb-2" />
-              <span className="text-2xl font-bold text-accent-dark">
+            <div className="flex flex-col items-center justify-center border-r border-gray-100">
+              <Maximize className="size-6 sm:size-7 text-gray-400 mb-2" />
+              <span className="text-lg sm:text-2xl font-bold text-accent-dark">
                 {property.sqft || "-"}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-widest">
+              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest">
                 Sqft
+              </span>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <Building className="size-6 sm:size-7 text-gray-400 mb-2" />
+              <span className="text-lg sm:text-2xl font-bold text-accent-dark">
+                {property.floorNumber ?? property.totalFloors ?? "-"}
+              </span>
+              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest">
+                Floors
               </span>
             </div>
           </div>
@@ -430,16 +466,25 @@ export default function PropertyDetailsPage() {
             <h2 className="text-2xl font-bold font-syne text-accent-dark mb-4">
               About this home
             </h2>
-            <p className="text-gray-600 leading-relaxed text-lg">
-              {property.description}
-            </p>
-            <p className="text-gray-600 leading-relaxed text-lg mt-4">
-              Experience the pinnacle of luxury living with this exquisite
-              property. Featuring state-of-the-art amenities, premium finishes,
-              and a location that offers both privacy and connectivity. Every
-              corner is designed with meticulous attention to detail to ensure a
-              lifestyle of comfort and grandeur.
-            </p>
+            <div className={showFullDescription ? "" : "line-clamp-5"}>
+              <p className="text-gray-600 leading-relaxed text-lg">
+                {property.description}
+              </p>
+              <p className="text-gray-600 leading-relaxed text-lg mt-4">
+                Experience the pinnacle of luxury living with this exquisite
+                property. Featuring state-of-the-art amenities, premium
+                finishes, and a location that offers both privacy and
+                connectivity. Every corner is designed with meticulous
+                attention to detail to ensure a lifestyle of comfort and
+                grandeur.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowFullDescription((prev) => !prev)}
+              className="mt-3 text-gold font-semibold hover:underline transition-colors"
+            >
+              {showFullDescription ? "See less" : "See more"}
+            </button>
           </div>
 
           {/* What this property offers — Airbnb-style */}
@@ -527,31 +572,6 @@ export default function PropertyDetailsPage() {
         {/* Sidebar (Right Column) */}
         <div className="lg:col-span-1">
           <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 sticky top-24">
-            {/* Agent Card */}
-            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-              <div className="w-14 h-14 rounded-full bg-gray-100 overflow-hidden shrink-0">
-                {property.agentPhotoUrl ? (
-                  <Image
-                    src={property.agentPhotoUrl}
-                    alt={property.agentName || "Agent"}
-                    width={56}
-                    height={56}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <User size={24} className="text-gray-400" />
-                  </div>
-                )}
-              </div>
-              <div>
-                <p className="font-bold text-accent-dark text-lg">
-                  {property.agentName || "Rupali Homes"}
-                </p>
-                <p className="text-gray-500 text-sm">Listing Agent</p>
-              </div>
-            </div>
-
             <div className="mb-6">
               <h3 className="text-2xl font-bold font-syne text-accent-dark mb-2">
                 {property.title}
@@ -719,6 +739,46 @@ export default function PropertyDetailsPage() {
           </div>
         </div>
       )}
+
+      {/* FAQs */}
+      <div className="max-w-7xl mx-auto px-6 mt-16">
+        <h2 className="text-3xl font-bold font-syne text-accent-dark mb-8">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-4">
+          {faqs.map((faq, i) => {
+            const isOpen = openFaq === i;
+            return (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
+                >
+                  <span className="text-lg font-semibold font-syne text-accent-dark">
+                    {faq.q}
+                  </span>
+                  <ChevronDown
+                    size={20}
+                    className={`shrink-0 text-gray-400 transition-transform duration-300 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-5">
+                    <p className="text-gray-600 leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Image Gallery Modal */}
       {showGallery && property && (

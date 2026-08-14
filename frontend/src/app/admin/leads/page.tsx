@@ -122,6 +122,10 @@ export default function LeadsPage() {
 
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
 
+  // Client-side pagination so large lead lists don't render an unwieldy DOM
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 50;
+
   // ── Data fetching ────────────────────────────────────────────────────
   const loadData = async (): Promise<void> => {
     try {
@@ -232,6 +236,13 @@ export default function LeadsPage() {
       return true;
     });
   }, [inquiries, dateFrom, dateTo, search, categoryFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const paginatedInquiries = filtered.slice(
+    safePage * PAGE_SIZE,
+    safePage * PAGE_SIZE + PAGE_SIZE,
+  );
 
   const selectedInquiries = useMemo(
     () => filtered.filter((inq) => selectedIds.has(inq.id)),
@@ -461,7 +472,10 @@ export default function LeadsPage() {
       <div className="flex items-center gap-2 border-b border-gray-200 pb-3 overflow-x-auto">
         <button
           type="button"
-          onClick={() => setCategoryFilter("ALL")}
+          onClick={() => {
+            setCategoryFilter("ALL");
+            setPage(0);
+          }}
           className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all whitespace-nowrap ${
             categoryFilter === "ALL"
               ? "bg-accent-dark text-white shadow-sm"
@@ -473,7 +487,10 @@ export default function LeadsPage() {
 
         <button
           type="button"
-          onClick={() => setCategoryFilter("BLOG_SUBMISSION")}
+          onClick={() => {
+            setCategoryFilter("BLOG_SUBMISSION");
+            setPage(0);
+          }}
           className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
             categoryFilter === "BLOG_SUBMISSION"
               ? "bg-gold text-white shadow-sm font-bold"
@@ -488,7 +505,10 @@ export default function LeadsPage() {
 
         <button
           type="button"
-          onClick={() => setCategoryFilter("SELL_VALUATION")}
+          onClick={() => {
+            setCategoryFilter("SELL_VALUATION");
+            setPage(0);
+          }}
           className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
             categoryFilter === "SELL_VALUATION"
               ? "bg-blue-600 text-white shadow-sm font-bold"
@@ -503,7 +523,10 @@ export default function LeadsPage() {
 
         <button
           type="button"
-          onClick={() => setCategoryFilter("CONTACT")}
+          onClick={() => {
+            setCategoryFilter("CONTACT");
+            setPage(0);
+          }}
           className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all whitespace-nowrap ${
             categoryFilter === "CONTACT"
               ? "bg-gray-800 text-white shadow-sm font-bold"
@@ -524,7 +547,10 @@ export default function LeadsPage() {
           <Input
             placeholder="Search by name, email, phone..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
             className="pl-9"
           />
         </div>
@@ -533,14 +559,20 @@ export default function LeadsPage() {
           <Input
             type="date"
             value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            onChange={(e) => {
+              setDateFrom(e.target.value);
+              setPage(0);
+            }}
             className="w-[140px] text-sm"
           />
           <span className="text-gray-400 text-xs">to</span>
           <Input
             type="date"
             value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
+            onChange={(e) => {
+              setDateTo(e.target.value);
+              setPage(0);
+            }}
             className="w-[140px] text-sm"
           />
           {(dateFrom || dateTo) && (
@@ -551,6 +583,7 @@ export default function LeadsPage() {
               onClick={() => {
                 setDateFrom("");
                 setDateTo("");
+                setPage(0);
               }}
               title="Clear date filter"
             >
@@ -664,7 +697,7 @@ export default function LeadsPage() {
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {filtered.map((inq) => {
+                  {paginatedInquiries.map((inq) => {
                     const isSelected = selectedIds.has(inq.id);
                     const isBlog = isBlogSubmission(inq);
                     const blogMeta = isBlog ? parseBlogSubmission(inq) : null;
@@ -773,6 +806,42 @@ export default function LeadsPage() {
                   })}
                 </div>
               )}
+
+              {/* Pagination */}
+              {!loading && filtered.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 text-xs text-gray-500">
+                  <span>
+                    Showing {safePage * PAGE_SIZE + 1}–
+                    {Math.min(filtered.length, (safePage + 1) * PAGE_SIZE)} of{" "}
+                    {filtered.length}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={safePage === 0}
+                      onClick={() =>
+                        setPage((p) => Math.max(0, p - 1))
+                      }
+                    >
+                      Previous
+                    </Button>
+                    <span>
+                      Page {safePage + 1} of {totalPages}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={safePage >= totalPages - 1}
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages - 1, p + 1))
+                      }
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -844,7 +913,7 @@ export default function LeadsPage() {
                       </div>
 
                       {selectedInquiry.email &&
-                        selectedInquiry.email !== "blog@rupalihomes.com" && (
+                        selectedInquiry.email !== "support@rupalihomes.com" && (
                           <div className="flex items-start gap-2">
                             <Mail size={14} className="text-gray-400 mt-0.5" />
                             <div>

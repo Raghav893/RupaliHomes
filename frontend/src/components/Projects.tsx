@@ -21,7 +21,9 @@ export default function Projects() {
         const data = await fetchProperties(0, 50);
         if (data && data.content) {
           const featured = data.content.filter((p: Property) => p.featured);
-          setProperties(featured);
+          // Cap at 9 so the homepage grid stays consistent even when many
+          // listings are marked featured.
+          setProperties(featured.slice(0, 9));
         }
       } catch (error) {
         console.error("Failed to load properties", error);

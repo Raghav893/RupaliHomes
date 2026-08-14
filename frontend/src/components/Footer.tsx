@@ -9,12 +9,12 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-5 md:gap-12 mb-6 md:mb-12">
           {/* Column 1: Brand & About */}
           <div className="space-y-4 md:space-y-6 col-span-2 md:col-span-1">
-            <Link href="/" className="inline-block relative h-12 w-48 md:h-16 md:w-64">
+            <Link href="/" className="inline-block relative h-16 w-64 md:h-20 md:w-80">
               <Image
                 src="/logo_rupali.png"
                 alt="Rupali Homes"
                 fill
-                className="object-contain object-left"
+                className="object-contain object-left mix-blend-multiply"
               />
             </Link>
             <p className="hidden sm:block text-sm leading-relaxed text-gray-500">
@@ -178,7 +178,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-gold shrink-0" />
-                <span>[EMAIL_ADDRESS]</span>
+                <span>support@rupalihomes.com</span>
               </li>
             </ul>
 

@@ -8,6 +8,7 @@ import {
   IndianRupee,
   Home,
   Bed,
+  ChevronDown,
 } from "lucide-react";
 import { getLocationSuggestions } from "@/lib/locationSuggestions";
 
@@ -151,7 +152,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
         <div className="p-2 bg-gray-50 rounded-full text-gray-400">
           <Home size={18} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-1">
             Property type
           </p>
@@ -162,7 +163,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
               setPropertyType(val);
               onSearch({ location, propertyType: val, priceRange, bedrooms });
             }}
-            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer"
+            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer pr-5"
           >
             <option value="">Any Type</option>
             <option value="Apartment">Apartments</option>
@@ -172,6 +173,10 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
             <option value="Plot">Plot & Land</option>
             <option value="Commercial">Commercial</option>
           </select>
+          <ChevronDown
+            size={16}
+            className="absolute right-0 bottom-1.5 text-gray-400 pointer-events-none"
+          />
         </div>
       </div>
 
@@ -180,7 +185,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
         <div className="p-2 bg-gray-50 rounded-full text-gray-400">
           <IndianRupee size={18} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-1">
             Budget
           </p>
@@ -191,7 +196,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
               setPriceRange(val);
               onSearch({ location, propertyType, priceRange: val, bedrooms });
             }}
-            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer"
+            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer pr-5"
           >
             <option value="">Any Budget</option>
             {priceOptions.map((range) => (
@@ -200,6 +205,10 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
               </option>
             ))}
           </select>
+          <ChevronDown
+            size={16}
+            className="absolute right-0 bottom-1.5 text-gray-400 pointer-events-none"
+          />
         </div>
       </div>
 
@@ -208,7 +217,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
         <div className="p-2 bg-gray-50 rounded-full text-gray-400">
           <Bed size={18} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-1">
             Bedrooms
           </p>
@@ -219,7 +228,7 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
               setBedrooms(val);
               onSearch({ location, propertyType, priceRange, bedrooms: val });
             }}
-            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer"
+            className="w-full text-sm font-medium text-accent-dark bg-transparent focus:outline-none appearance-none cursor-pointer pr-5"
           >
             <option value="">Any</option>
             <option value="1">1+</option>
@@ -228,6 +237,10 @@ export default function SearchFilterBar({ onSearch, initialFilters, mode = "buy"
             <option value="4">4+</option>
             <option value="5">5+</option>
           </select>
+          <ChevronDown
+            size={16}
+            className="absolute right-0 bottom-1.5 text-gray-400 pointer-events-none"
+          />
         </div>
       </div>
 

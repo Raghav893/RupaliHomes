@@ -293,7 +293,7 @@ export default function Contact() {
                     <p className="text-gray-400 text-sm uppercase tracking-wider mb-1">
                       Email Address
                     </p>
-                    <p className="text-white text-lg">info@rupalihomes.com</p>
+                    <p className="text-white text-lg">support@rupalihomes.com</p>
                   </div>
                 </div>
 

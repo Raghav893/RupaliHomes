@@ -45,7 +45,7 @@ export default function AdminDashboard() {
     try {
       const [propertiesRes, blogsRes, leadsRes, dashboardRes] =
         await Promise.all([
-          fetchAdminProperties(0, 100),
+          fetchAdminProperties(0, 500),
           fetchAdminBlogs(),
           fetchContactSubmissions(),
           fetchDashboardStats(),
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
   const statCards = [
     {
       title: "Total Properties",
-      value: properties.length,
+      value: stats?.totalProperties ?? properties.length,
       icon: Building2,
       href: "/admin/projects",
       actionLabel: "Manage Properties",

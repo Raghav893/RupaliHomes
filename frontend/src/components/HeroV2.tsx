@@ -2,10 +2,6 @@
 
 import {
   motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  useMotionValue,
 } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
@@ -14,9 +10,6 @@ import HeroSearch from "@/components/HeroSearch";
 
 export default function HeroV2() {
   const [activeTab, setActiveTab] = useState("buy");
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, 150]);
-  const yText = useTransform(scrollY, [0, 500], [0, -50]);
 
   const headings = {
     buy: { prefix: "Find Your", highlight: "Dream", suffix: "Property Today" },
@@ -48,13 +41,12 @@ export default function HeroV2() {
   }, [activeTab]);
 
   return (
-    <div className="relative min-h-0 md:min-h-[85vh] flex flex-col justify-start px-4 pt-28 pb-8 md:pt-44 md:pb-16 overflow-hidden bg-grid">
+    <div className="relative min-h-0 md:min-h-[85vh] flex flex-col justify-start px-4 pt-28 pb-8 md:pt-44 md:pb-16 bg-grid">
       <HeroSvgAnimation />
 
-      <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-12 items-center relative z-10">
+      <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-12 items-center relative z-30">
         {/* Text Content */}
         <motion.div
-          style={{ y: yText }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -88,7 +80,6 @@ export default function HeroV2() {
 
         {/* Hero Image */}
         <motion.div
-          style={{ y }}
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2 }}

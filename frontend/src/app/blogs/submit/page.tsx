@@ -122,7 +122,7 @@ export default function SubmitBlogPage() {
       const inquiryData = {
         name: formData.name.trim(),
         phone: cleanPhone,
-        email: "blog@rupalihomes.com",
+        email: "support@rupalihomes.com",
         message: messageBody,
         type: "BLOG_SUBMISSION",
         city: formData.location.trim(),

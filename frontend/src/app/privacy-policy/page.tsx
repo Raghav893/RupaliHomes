@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <h2 className="text-2xl font-semibold text-accent-dark mt-8 mb-4">Contact Us</h2>
             <p>
-              If you have any questions or concerns about this Privacy Policy, please contact us at contact@rupalihomes.com.
+              If you have any questions or concerns about this Privacy Policy, please contact us at support@rupalihomes.com.
             </p>
           </div>
         </div>

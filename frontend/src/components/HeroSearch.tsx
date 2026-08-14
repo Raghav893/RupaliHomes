@@ -400,7 +400,7 @@ export default function HeroSearch({
             />
           </button>
           {showBudgetDropdown && (
-            <div className="absolute bottom-full left-0 mb-2 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
+            <div className="absolute top-full left-0 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
               {(activeTab === "rent"
                 ? budgetRanges.rent
                 : budgetRanges.buy
@@ -439,7 +439,7 @@ export default function HeroSearch({
               />
             </button>
             {showConfigDropdown && (
-              <div className="absolute bottom-full left-0 mb-2 w-44 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
+              <div className="absolute top-full left-0 w-44 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
                 {configurations.map((config) => (
                   <button
                     key={config.value}
@@ -479,7 +479,7 @@ export default function HeroSearch({
               />
             </button>
             {showPropertyTypeDropdown && (
-              <div className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
+              <div className="absolute top-full left-0 w-48 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
                 {propertyTypes.map((type) => (
                   <button
                     key={type}
@@ -517,7 +517,7 @@ export default function HeroSearch({
               />
             </button>
             {showPossessionDropdown && (
-              <div className="absolute bottom-full left-0 mb-2 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
+              <div className="absolute top-full left-0 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2">
                 {possessionStatuses.map((status) => (
                   <button
                     key={status}

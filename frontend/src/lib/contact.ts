@@ -8,7 +8,7 @@ export const CONTACT = {
   phoneRaw: "919876543210",
   // Pretty display form.
   phoneDisplay: "+91 98765 43210",
-  email: "info@rupalihomes.com",
+  email: "support@rupalihomes.com",
   instagramHandle: "rupali_homes",
   instagramUrl: "https://instagram.com/rupali_homes",
   facebookUrl: "https://www.instagram.com/rupali_homes/",
