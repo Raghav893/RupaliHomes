@@ -14,28 +14,30 @@ import { useCompare } from "@/context/CompareContext";
 interface PropertyGridCardProps {
   property: Property;
   index?: number;
+  liked?: boolean;
+  onLikeChange?: (id: number, liked: boolean) => void;
 }
 
-export default function PropertyGridCard({ property, index = 0 }: PropertyGridCardProps) {
-  const [hasLiked, setHasLiked] = useState(false);
+export default function PropertyGridCard({ property, index = 0, liked, onLikeChange }: PropertyGridCardProps) {
+  const [localHasLiked, setLocalHasLiked] = useState(false);
+  const hasLiked = liked ?? localHasLiked;
   const [reactionsCount, setReactionsCount] = useState(property.reactionsCount || 0);
   const { addToCompare, compareItems } = useCompare();
   const isCompared = compareItems.some((p) => p.id === property.id);
 
   useEffect(() => {
-    if (property.id) {
-      fetchLikedPropertyIds().then((ids) => {
-        setHasLiked(ids.includes(property.id!));
-      });
+    if (liked === undefined && property.id) {
+      fetchLikedPropertyIds().then((ids) => setLocalHasLiked(ids.includes(property.id!)));
     }
-  }, [property.id]);
+  }, [liked, property.id]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!hasLiked) {
-      setHasLiked(true);
+      setLocalHasLiked(true);
+      if (property.id) onLikeChange?.(property.id, true);
       setReactionsCount((prev) => prev + 1);
 
       // Confetti burst
@@ -65,7 +67,8 @@ export default function PropertyGridCard({ property, index = 0 }: PropertyGridCa
         window.dispatchEvent(new Event("likedPropertiesChanged"));
       }
     } else {
-      setHasLiked(false);
+      setLocalHasLiked(false);
+      if (property.id) onLikeChange?.(property.id, false);
       setReactionsCount((prev) => Math.max(0, prev - 1));
       if (property.id) {
         await unlikeProperty(property.id);

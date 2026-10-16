@@ -98,33 +98,36 @@ function BuyPageContent() {
   }, []);
 
   useEffect(() => {
-      const q = searchParams.get("q");
-      const city = searchParams.get("city");
-      const urlLocation = searchParams.get("location") || [q, city].filter(Boolean).join(", ");
+    const q = searchParams.get("q");
+    const city = searchParams.get("city");
+    const urlLocation = searchParams.get("location") || [q, city].filter(Boolean).join(", ");
+    const urlPropertyType = searchParams.get("propertyType") || searchParams.get("type");
+    const urlMinPrice = searchParams.get("minPrice");
+    const urlMaxPrice = searchParams.get("maxPrice");
+    const urlBedrooms = searchParams.get("bedrooms");
+    const priceLabel = findPriceRangeLabel(
+      urlMinPrice ? Number(urlMinPrice) : undefined,
+      urlMaxPrice ? Number(urlMaxPrice) : undefined,
+      "buy",
+    );
 
-      const urlPropertyType = searchParams.get("propertyType") || searchParams.get("type");
-      const urlMinPrice = searchParams.get("minPrice");
-      const urlMaxPrice = searchParams.get("maxPrice");
-      const urlBedrooms = searchParams.get("bedrooms");
+    const nextFilters: FilterState = {
+      location: urlLocation || "",
+      minPrice: urlMinPrice || "",
+      maxPrice: urlMaxPrice || "",
+      propertyType: urlPropertyType || "",
+      bedrooms: urlBedrooms || "",
+      priceRange: priceLabel || "",
+    };
 
-      // Reverse-map minPrice/maxPrice to a priceRange label for the dropdown
-      const priceLabel = findPriceRangeLabel(
-        urlMinPrice ? Number(urlMinPrice) : undefined,
-        urlMaxPrice ? Number(urlMaxPrice) : undefined,
-        "buy"
+    setFilters((previous) => {
+      const unchanged = Object.keys(nextFilters).every(
+        (key) => previous[key as keyof FilterState] === nextFilters[key as keyof FilterState],
       );
-
-      setFilters((prev) => ({
-        ...prev,
-        ...(urlLocation && { location: urlLocation }),
-        ...(urlPropertyType && { propertyType: urlPropertyType }),
-        ...(urlMinPrice && { minPrice: urlMinPrice }),
-        ...(urlMaxPrice && { maxPrice: urlMaxPrice }),
-        ...(urlBedrooms && { bedrooms: urlBedrooms }),
-        ...(priceLabel && { priceRange: priceLabel }),
-      }));
-      setPage(0);
-      setCurrentIndex(0);
+      return unchanged ? previous : nextFilters;
+    });
+    setPage((previous) => previous === 0 ? previous : 0);
+    setCurrentIndex((previous) => previous === 0 ? previous : 0);
   }, [searchParams]);
 
   const applyFilters = useCallback(async () => {
@@ -428,6 +431,15 @@ function BuyPageContent() {
                   key={property.id}
                   property={property}
                   index={index}
+                  liked={property.id !== undefined && likedIds.has(property.id)}
+                  onLikeChange={(id, liked) => {
+                    setLikedIds((previous) => {
+                      const next = new Set(previous);
+                      if (liked) next.add(id);
+                      else next.delete(id);
+                      return next;
+                    });
+                  }}
                 />
               ))}
             </motion.div>

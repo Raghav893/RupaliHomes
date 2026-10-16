@@ -419,10 +419,25 @@ export async function submitInquiry(inquiry: {
 // ─── Visitor identity for the backend-backed like system ────────────────────
 
 let visitorId: string | null = null;
+const VISITOR_ID_KEY = "rupali-visitor-id";
+const LIKED_IDS_CACHE_KEY = "rupali-liked-property-ids";
+const LIKED_IDS_CACHE_TTL_MS = 30_000;
+let likedIdsCache: { visitorId: string; ids: number[]; expiresAt: number } | null = null;
+let likedIdsRequest: { visitorId: string; promise: Promise<number[]> } | null = null;
 
 export function getVisitorId(): string {
   if (typeof window === "undefined") return "";
-  if (!visitorId) visitorId = crypto.randomUUID();
+  if (!visitorId) {
+    try {
+      visitorId = window.localStorage.getItem(VISITOR_ID_KEY);
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        window.localStorage.setItem(VISITOR_ID_KEY, visitorId);
+      }
+    } catch {
+      visitorId = crypto.randomUUID();
+    }
+  }
   return visitorId;
 }
 
@@ -434,6 +449,7 @@ export async function likeProperty(propertyId: string | number): Promise<boolean
     const res = await fetch(`${API_URL}/likes/${propertyId}?visitorId=${visitorId}`, {
       method: "POST",
     });
+    if (res.ok) updateLikedPropertyIdsCache(Number(propertyId), true);
     return res.ok;
   } catch (error) {
     console.error("Failed to like property:", error);
@@ -447,6 +463,7 @@ export async function unlikeProperty(propertyId: string | number): Promise<boole
     const res = await fetch(`${API_URL}/likes/${propertyId}?visitorId=${visitorId}`, {
       method: "DELETE",
     });
+    if (res.ok) updateLikedPropertyIdsCache(Number(propertyId), false);
     return res.ok;
   } catch (error) {
     console.error("Failed to unlike property:", error);
@@ -455,14 +472,83 @@ export async function unlikeProperty(propertyId: string | number): Promise<boole
 }
 
 export async function fetchLikedPropertyIds(): Promise<number[]> {
+  const currentVisitorId = getVisitorId();
+  if (!currentVisitorId) return [];
+
+  if (likedIdsCache?.visitorId === currentVisitorId && likedIdsCache.expiresAt > Date.now()) {
+    return [...likedIdsCache.ids];
+  }
+  if (typeof window !== "undefined") {
+    try {
+      const stored = JSON.parse(window.sessionStorage.getItem(LIKED_IDS_CACHE_KEY) || "null");
+      if (
+        stored?.visitorId === currentVisitorId &&
+        stored.expiresAt > Date.now() &&
+        Array.isArray(stored.ids)
+      ) {
+        const ids = stored.ids.map(Number).filter(Number.isFinite);
+        likedIdsCache = { visitorId: currentVisitorId, ids, expiresAt: stored.expiresAt };
+        return [...ids];
+      }
+    } catch {
+      // Ignore invalid or unavailable cached storage.
+    }
+  }
+  if (likedIdsRequest?.visitorId === currentVisitorId) return [...await likedIdsRequest.promise];
+
+  const request = (async () => {
+    try {
+      const res = await fetch(`${API_URL}/likes?visitorId=${currentVisitorId}`);
+      if (!res.ok) return [];
+      const ids: number[] = await res.json();
+      const normalizedIds = Array.isArray(ids) ? ids.map(Number).filter(Number.isFinite) : [];
+      likedIdsCache = {
+        visitorId: currentVisitorId,
+        ids: normalizedIds,
+        expiresAt: Date.now() + LIKED_IDS_CACHE_TTL_MS,
+      };
+      if (typeof window !== "undefined") {
+        try {
+          window.sessionStorage.setItem(LIKED_IDS_CACHE_KEY, JSON.stringify(likedIdsCache));
+        } catch {
+          // Storage may be unavailable in private browsing; in-memory caching still works.
+        }
+      }
+      return normalizedIds;
+    } catch (error) {
+      console.error("Failed to fetch liked IDs:", error);
+      return [];
+    }
+  })();
+  likedIdsRequest = { visitorId: currentVisitorId, promise: request };
   try {
-    const visitorId = getVisitorId();
-    const res = await fetch(`${API_URL}/likes?visitorId=${visitorId}`);
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (error) {
-    console.error("Failed to fetch liked IDs:", error);
-    return [];
+    return [...await request];
+  } finally {
+    if (likedIdsRequest?.promise === request) likedIdsRequest = null;
+  }
+}
+
+function updateLikedPropertyIdsCache(propertyId: number, liked: boolean) {
+  const currentVisitorId = getVisitorId();
+  if (!currentVisitorId || !Number.isFinite(propertyId)) return;
+
+  let ids = likedIdsCache?.visitorId === currentVisitorId ? [...likedIdsCache.ids] : [];
+  if (typeof window !== "undefined") {
+    try {
+      const stored = JSON.parse(window.sessionStorage.getItem(LIKED_IDS_CACHE_KEY) || "null");
+      if (stored?.visitorId === currentVisitorId && Array.isArray(stored.ids)) ids = stored.ids;
+    } catch {
+      // Ignore invalid or unavailable cached storage.
+    }
+  }
+  const nextIds = liked ? Array.from(new Set([...ids, propertyId])) : ids.filter((id) => id !== propertyId);
+  likedIdsCache = { visitorId: currentVisitorId, ids: nextIds, expiresAt: Date.now() + LIKED_IDS_CACHE_TTL_MS };
+  if (typeof window !== "undefined") {
+    try {
+      window.sessionStorage.setItem(LIKED_IDS_CACHE_KEY, JSON.stringify(likedIdsCache));
+    } catch {
+      // Storage may be unavailable in private browsing; in-memory caching still works.
+    }
   }
 }
 
