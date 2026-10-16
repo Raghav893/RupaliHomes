@@ -49,6 +49,14 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+In the Vercel project's Settings > Build and Deployment, set Root Directory to
+`frontend` and Framework Preset to Next.js. Leave Output Directory at its default.
+The `vercel.json` in this directory sets Install Command to `npm ci` and Build
+Command to `npm run build`. Remove old dashboard overrides containing
+`cd frontend`, since commands already run inside the selected Root Directory.
+
+Set `NEXT_PUBLIC_API_URL=https://api.rupalihomes.com` in the project's environment
+variables, along with the Firebase values above. Save the settings and deploy the
+latest commit; redeploying an older commit will retain the old configuration.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
