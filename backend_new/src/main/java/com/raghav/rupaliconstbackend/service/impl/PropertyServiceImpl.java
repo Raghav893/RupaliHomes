@@ -11,10 +11,14 @@ import com.raghav.rupaliconstbackend.service.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +75,15 @@ public class PropertyServiceImpl implements PropertyService {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get(type == PropertyType.RENT ? "rentAmount" : "price"), effectiveMaxPrice));
         }
 
-        return propertyRepository.findAll(spec, pageable).map(this::toDto);
+        Page<Property> properties = propertyRepository.findAll(spec, pageable);
+        if (properties.isEmpty()) {
+            return properties.map(property -> toDto(property, 0));
+        }
+        List<Long> propertyIds = properties.getContent().stream().map(Property::getId).toList();
+        Map<Long, Long> likeCounts = propertyLikeRepository.countLikesByPropertyIds(propertyIds).stream()
+                .collect(Collectors.toMap(PropertyLikeRepository.PropertyLikeCount::getPropertyId,
+                        PropertyLikeRepository.PropertyLikeCount::getLikeCount));
+        return properties.map(property -> toDto(property, likeCounts.getOrDefault(property.getId(), 0L)));
     }
 
     private static BigDecimal minRentOr(BigDecimal minPrice, BigDecimal minRent) {
@@ -93,7 +105,7 @@ public class PropertyServiceImpl implements PropertyService {
         if (property.getStatus() == PropertyStatus.HIDDEN) {
             throw new ResourceNotFoundException("Property not found");
         }
-        return toDto(property);
+        return toDto(property, propertyLikeRepository.countByPropertyId(property.getId()));
     }
 
     @Override
@@ -110,7 +122,7 @@ public class PropertyServiceImpl implements PropertyService {
         propertyRepository.save(property);
     }
 
-    private PropertyResponseDTO toDto(Property property) {
+    private PropertyResponseDTO toDto(Property property, long likeCount) {
         PropertyResponseDTO dto = new PropertyResponseDTO();
         dto.setId(property.getId());
         dto.setTitle(property.getTitle());
@@ -146,8 +158,7 @@ public class PropertyServiceImpl implements PropertyService {
         dto.setAgentName(property.getAgentName());
         dto.setAgentPhotoUrl(property.getAgentPhotoUrl());
         dto.setAmenities(property.getAmenities());
-        long realCount = propertyLikeRepository.countByPropertyId(property.getId());
-        dto.setReactionsCount((int) realCount);
+        dto.setReactionsCount((int) likeCount);
         return dto;
     }
 }
