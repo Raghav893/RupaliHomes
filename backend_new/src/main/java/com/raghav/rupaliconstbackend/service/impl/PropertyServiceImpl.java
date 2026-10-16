@@ -23,12 +23,13 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyLikeRepository propertyLikeRepository;
 
     @Override
-    public Page<PropertyResponseDTO> getAvailableProperties(Pageable pageable, PropertyType type, BigDecimal minPrice,
-                                                            BigDecimal maxPrice, BigDecimal minRent, BigDecimal maxRent,
-                                                            String location, String search, String propertyCategory,
-                                                            Integer minBedrooms) {
+    public Page<PropertyResponseDTO> getAvailableProperties(Pageable pageable, PropertyType type, PropertyStatus status,
+                                                            BigDecimal minPrice, BigDecimal maxPrice, BigDecimal minRent,
+                                                            BigDecimal maxRent, String location, String search,
+                                                            String propertyCategory, Integer minBedrooms) {
+        PropertyStatus effectiveStatus = status != null ? status : PropertyStatus.AVAILABLE;
         Specification<Property> spec =
-                (root, query, cb) -> cb.equal(root.get("status"), PropertyStatus.AVAILABLE);
+                (root, query, cb) -> cb.equal(root.get("status"), effectiveStatus);
 
         if (type != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), type));
@@ -87,15 +88,21 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public PropertyResponseDTO getAvailableProperty(Long id) {
-        Property property = propertyRepository.findByIdAndStatus(id, PropertyStatus.AVAILABLE)
+        Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+        if (property.getStatus() == PropertyStatus.HIDDEN) {
+            throw new ResourceNotFoundException("Property not found");
+        }
         return toDto(property);
     }
 
     @Override
     public void reactToProperty(Long id) {
-        Property property = propertyRepository.findByIdAndStatus(id, PropertyStatus.AVAILABLE)
+        Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+        if (property.getStatus() == PropertyStatus.HIDDEN) {
+            throw new ResourceNotFoundException("Property not found");
+        }
         
         Integer current = property.getReactionsCount();
         if (current == null) current = 0;
@@ -139,7 +146,6 @@ public class PropertyServiceImpl implements PropertyService {
         dto.setAgentName(property.getAgentName());
         dto.setAgentPhotoUrl(property.getAgentPhotoUrl());
         dto.setAmenities(property.getAmenities());
-        // Use real count from property_likes table for accuracy (#16)
         long realCount = propertyLikeRepository.countByPropertyId(property.getId());
         dto.setReactionsCount((int) realCount);
         return dto;

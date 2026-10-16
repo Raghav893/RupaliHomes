@@ -103,36 +103,36 @@ export interface ContactFormSubmission {
 }
 
 export interface Blog {
-    id?: number;
-    title: string;
-    content: string;
-    author: string;
-    category: string;
-    imageType?: string;
-    imageName?: string;
-    status?: string;
-    createdAt?: string;
-    updatedAt?: string;
+  id?: number;
+  title: string;
+  content: string;
+  author: string;
+  category: string;
+  imageType?: string;
+  imageName?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Inquiry extends ContactFormSubmission {
-    id: number;
-    type?: string;
-    city?: string;
-    propertyType?: string;
-    alternatePhone?: string;
-    createdAt: string;
-    status: "NEW" | "CONTACTED" | "CLOSED";
+  id: number;
+  type?: string;
+  city?: string;
+  propertyType?: string;
+  alternatePhone?: string;
+  createdAt: string;
+  status: "NEW" | "CONTACTED" | "CLOSED";
 }
 
 export interface DashboardStats {
-    totalUsers: number;
-    totalProperties: number;
-    totalSoldProperties: number;
-    totalRentedProperties: number;
-    totalSalesRevenue: number;
-    totalRentalIncome: number;
-    totalReactions: number;
+  totalUsers: number;
+  totalProperties: number;
+  totalSoldProperties: number;
+  totalRentedProperties: number;
+  totalSalesRevenue: number;
+  totalRentalIncome: number;
+  totalReactions: number;
 }
 
 export interface Admin {
@@ -140,4 +140,41 @@ export interface Admin {
   email: string;
   role: "ADMIN" | "SUPER_ADMIN";
   createdAt: string;
+}
+
+export interface Testimonial {
+  id: number;
+  title: string;
+  description?: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  familyName?: string;
+  propertyReference?: string;
+  displayOrder: number;
+  isPublished: boolean;
+  videoPlatform: "YOUTUBE" | "INSTAGRAM" | string;
+  embedId?: string;
+  embedUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TestimonialInput {
+  title: string;
+  description?: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  familyName?: string;
+  propertyReference?: string;
+  displayOrder?: number;
+  isPublished?: boolean;
+}
+
+export interface LandingInstagramVideo {
+  id: number;
+  videoUrl: string;
+  embedId: string;
+  embedUrl: string;
+  displayOrder: number;
+  isPublished: boolean;
 }

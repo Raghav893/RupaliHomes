@@ -100,20 +100,26 @@ export default function PropertyDetailsPage() {
     async function loadProperty() {
       if (!id) return;
       try {
-        const data = await fetchPropertyById(id.toString());
-        if (data) {
-          setProperty(data);
+        const [propertyResult, carouselResult] = await Promise.allSettled([
+          fetchPropertyById(id.toString()),
+          fetchProperties(0, 20, {
+            type: PropertyType.SALE,
+          }),
+        ]);
+        if (propertyResult.status === "fulfilled") {
+          if (propertyResult.value) setProperty(propertyResult.value);
+        } else {
+          console.error("Failed to load property", propertyResult.reason);
         }
         // Load other properties for the carousel
-        const allProps = await fetchProperties(0, 20, {
-          type: PropertyType.SALE,
-        });
-        if (allProps?.content) {
+        if (carouselResult.status === "fulfilled" && carouselResult.value?.content) {
           setOtherProperties(
-            allProps.content.filter(
+            carouselResult.value.content.filter(
               (p: Property) => String(p.id) !== String(id),
             ),
           );
+        } else if (carouselResult.status === "rejected") {
+          console.error("Failed to load related properties", carouselResult.reason);
         }
       } catch (error) {
         console.error("Failed to load property", error);

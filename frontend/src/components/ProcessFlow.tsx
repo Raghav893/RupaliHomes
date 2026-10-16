@@ -2,26 +2,39 @@
 
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { MapPin, Search, FileCheck, Handshake, Key } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Search, FileCheck, Handshake, Key, ArrowUpRight, Video } from "lucide-react";
 
-const steps = [
+interface ProcessStep {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  href?: string;
+  badge?: string;
+}
+
+const steps: ProcessStep[] = [
   {
     icon: Search,
     title: "20k+ Properties Rented",
     description:
       "Successfully matched thousands of tenants with their ideal homes across top metropolitan cities.",
+    href: "/properties?status=rented",
   },
   {
     icon: MapPin,
     title: "5k+ Homes Sold",
     description:
       "Guided families and investors to close their dream deals with complete transparency.",
+    href: "/properties?status=sold",
   },
   {
     icon: FileCheck,
     title: "15k+ Happy Families",
     description:
       "Built a thriving community of satisfied homeowners and tenants through dedicated service.",
+    href: "/testimonials",
+    badge: "Watch Video Stories",
   },
   {
     icon: Handshake,
@@ -166,6 +179,45 @@ export default function ProcessFlow() {
           <div className="space-y-12 md:space-y-32 relative z-10">
             {steps.map((step, index) => {
               const isEven = index % 2 === 0;
+
+              const cardContent = (
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 relative group transition-all duration-300 cursor-pointer hover:shadow-gold/10 hover:border-gold/30 ${
+                    step.href ? "hover:border-gold ring-2 ring-transparent hover:ring-gold/20" : ""
+                  }`}
+                >
+                  <div className="absolute -top-6 -right-6 w-12 h-12 bg-accent-dark text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg z-20 group-hover:bg-gold group-hover:scale-110 transition-all duration-300">
+                    {index + 1}
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2 md:mb-4">
+                    <h3 className="text-lg md:text-2xl font-bold font-syne text-accent-dark group-hover:text-gold transition-colors flex items-center gap-2">
+                      {step.title}
+                      {step.href && (
+                        <ArrowUpRight
+                          size={20}
+                          className="text-gold opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
+                      )}
+                    </h3>
+                  </div>
+
+                  <p className="text-gray-600 leading-relaxed mb-2">
+                    {step.description}
+                  </p>
+
+                  {step.badge && (
+                    <div className="pt-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 text-gold text-xs font-bold font-syne group-hover:bg-gold group-hover:text-white transition-colors">
+                        <Video size={13} /> {step.badge}
+                      </span>
+                    </div>
+                  )}
+                </motion.div>
+              );
+
               return (
                 <motion.div
                   key={index}
@@ -179,21 +231,13 @@ export default function ProcessFlow() {
                 >
                   {/* Content Side */}
                   <div className="w-full md:w-5/12 px-4 mb-8 md:mb-0">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 relative group transition-all duration-300 cursor-pointer hover:shadow-gold/10 hover:border-gold/30`}
-                    >
-                      <div className="absolute -top-6 -right-6 w-12 h-12 bg-accent-dark text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg z-20 group-hover:bg-gold group-hover:scale-110 transition-all duration-300">
-                        {index + 1}
-                      </div>
-                      <h3 className="text-lg md:text-2xl font-bold font-syne text-accent-dark mb-2 md:mb-4 group-hover:text-gold transition-colors">
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {step.description}
-                      </p>
-                    </motion.div>
+                    {step.href ? (
+                      <Link href={step.href} className="block">
+                        {cardContent}
+                      </Link>
+                    ) : (
+                      cardContent
+                    )}
                   </div>
 
                   {/* Center Icon Node (Ref Target) */}

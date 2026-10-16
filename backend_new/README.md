@@ -4,10 +4,10 @@ Spring Boot backend for buying, selling, and renting properties with JWT authent
 
 ## Tech Stack
 - Spring Boot
-- Java 21 (note: current `pom.xml` is unchanged)
+- Java 17
 - Spring Security + JWT
 - Spring Data JPA (Hibernate)
-- MySQL
+- PostgreSQL (Supabase)
 - Maven
 
 ## Roles
@@ -47,7 +47,11 @@ Filters for `/properties`:
 - GET `/super-admin/dashboard`
 
 ## Configuration
-Update `src/main/resources/application.properties` for database credentials and JWT secret.
+Set `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`,
+`SPRING_DATASOURCE_PASSWORD`, and `APP_JWT_SECRET` in the runtime environment.
+The password and JWT secret are required and are not embedded in the application.
+Set `APP_SEED_ENABLED=false` in production to disable default admin and demo data
+creation. See [the VPS deployment guide](../deploy/vps/README.md).
 
 ## Build & Run
 - `./mvnw clean package`

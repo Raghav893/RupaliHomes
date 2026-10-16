@@ -1,6 +1,7 @@
 package com.raghav.rupaliconstbackend.service;
 
 import com.raghav.rupaliconstbackend.DTO.PropertyResponseDTO;
+import com.raghav.rupaliconstbackend.entity.PropertyStatus;
 import com.raghav.rupaliconstbackend.entity.PropertyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ public interface PropertyService {
     Page<PropertyResponseDTO> getAvailableProperties(
             Pageable pageable,
             PropertyType type,
+            PropertyStatus status,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             BigDecimal minRent,

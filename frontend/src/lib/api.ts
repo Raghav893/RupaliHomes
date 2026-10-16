@@ -1,4 +1,4 @@
-import { Property, PropertyType, PropertyStatus, ContactFormSubmission, Blog, Inquiry, DashboardStats } from "../types";
+import { Property, PropertyType, PropertyStatus, ContactFormSubmission, Blog, Inquiry, DashboardStats, Testimonial, TestimonialInput, LandingInstagramVideo } from "../types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.rupalihomes.com";
 
@@ -14,6 +14,7 @@ export function getAuthHeader(): Record<string, string> {
 function normalizePropertyStatus(status: unknown): PropertyStatus {
   if (!status) return PropertyStatus.AVAILABLE;
   const normalized = String(status).toUpperCase();
+
   if (Object.values(PropertyStatus).includes(normalized as PropertyStatus)) {
     return normalized as PropertyStatus;
   }
@@ -22,6 +23,7 @@ function normalizePropertyStatus(status: unknown): PropertyStatus {
 
 type PropertySearchFilters = {
   type?: PropertyType;
+  status?: PropertyStatus;
   minPrice?: number;
   maxPrice?: number;
   location?: string;
@@ -33,6 +35,7 @@ type PropertySearchFilters = {
 function matchesClientFilters(property: Property, filters?: PropertySearchFilters): boolean {
   if (!filters) return true;
   if (filters.type && property.type !== filters.type) return false;
+  if (filters.status && property.status !== filters.status) return false;
 
   const query = (filters.search || filters.location || "").trim().toLowerCase();
   if (query) {
@@ -106,6 +109,7 @@ export async function fetchProperties(
     params.set("page", String(page));
     params.set("size", String(size));
     if (filters?.type) params.set("type", filters.type);
+    if (filters?.status) params.set("status", filters.status);
     if (filters?.minPrice !== undefined) params.set("minPrice", String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set("maxPrice", String(filters.maxPrice));
     if (filters?.location) params.set("location", filters.location);
@@ -126,10 +130,15 @@ export async function fetchProperties(
     const backendReturnedArray = Array.isArray(data);
     const rawContent = backendReturnedArray ? data : (data.content || []);
     const mappedContent: Property[] = rawContent.map(mapPropertyFromBackend);
-    const filteredContent = backendReturnedArray
-      ? mappedContent.filter((property) => matchesClientFilters(property, filters))
-      : mappedContent;
-    const totalElements = Number(data.totalElements ?? filteredContent.length);
+    // Keep status filtering defensive as well as server-side. This prevents a
+    // stale backend deployment from leaking available/sale records into a
+    // status-specific listing while the backend is being restarted.
+    const filteredContent = mappedContent.filter((property) =>
+      filters?.status ? property.status === filters.status : true,
+    );
+    const totalElements = backendReturnedArray
+      ? filteredContent.length
+      : Number(data.totalElements ?? filteredContent.length);
     const totalPages = Number(data.totalPages ?? Math.max(1, Math.ceil(totalElements / size)));
     const content = backendReturnedArray
       ? filteredContent.slice(page * size, page * size + size)
@@ -833,5 +842,197 @@ export async function updateNormalUserProfile(
   } catch (error) {
     console.error("Failed to update normal user profile:", error);
     return { ok: false, error: "Network error. Please try again." };
+  }
+}
+
+// ─── Testimonials API ──────────────────────────────────────────────────
+
+export async function fetchPublicTestimonials(): Promise<Testimonial[]> {
+  try {
+    const res = await fetch(`${API_URL}/testimonials`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Failed to fetch public testimonials:", error);
+    return [];
+  }
+}
+
+function mapLandingInstagramVideo(dto: Record<string, unknown>): LandingInstagramVideo {
+  return {
+    id: Number(dto.id),
+    videoUrl: String(dto.videoUrl || ""),
+    embedId: String(dto.embedId || ""),
+    embedUrl: String(dto.embedUrl || dto.videoUrl || ""),
+    displayOrder: Number(dto.displayOrder || 0),
+    isPublished: Boolean(dto.isPublished),
+  };
+}
+
+export async function fetchLandingInstagramVideos(admin = false): Promise<LandingInstagramVideo[]> {
+  try {
+    const path = admin ? "/admin/landing-instagram-videos" : "/landing-instagram-videos";
+    const res = await fetch(`${API_URL}${path}`, {
+      headers: admin ? getAuthHeader() : {},
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()).map(mapLandingInstagramVideo);
+  } catch (error) {
+    console.error("Failed to fetch landing Instagram videos:", error);
+    return [];
+  }
+}
+
+export async function saveLandingInstagramVideo(
+  data: { videoUrl: string; displayOrder: number; isPublished: boolean },
+  id?: number,
+): Promise<LandingInstagramVideo | null> {
+  try {
+    const res = await fetch(`${API_URL}/admin/landing-instagram-videos${id ? `/${id}` : ""}`, {
+      method: id ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return null;
+    return mapLandingInstagramVideo(await res.json());
+  } catch (error) {
+    console.error("Failed to save landing Instagram video:", error);
+    return null;
+  }
+}
+
+export async function deleteLandingInstagramVideo(id: number): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/admin/landing-instagram-videos/${id}`, { method: "DELETE", headers: getAuthHeader() });
+    return res.ok || res.status === 204;
+  } catch { return false; }
+}
+
+export async function setLandingInstagramVideoPublished(id: number, published: boolean): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/admin/landing-instagram-videos/${id}/publish?published=${published}`, { method: "PATCH", headers: getAuthHeader() });
+    return res.ok;
+  } catch { return false; }
+}
+
+export async function fetchAdminTestimonials(): Promise<Testimonial[]> {
+  try {
+    const res = await fetch(`${API_URL}/admin/testimonials`, {
+      headers: { ...getAuthHeader() },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Failed to fetch admin testimonials:", error);
+    return [];
+  }
+}
+
+export async function createTestimonial(
+  data: TestimonialInput,
+): Promise<{ ok: boolean; data?: Testimonial; error?: string }> {
+  try {
+    const res = await fetch(`${API_URL}/admin/testimonials`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      const errorMsg =
+        errJson.message || errJson.error || `Failed to create testimonial (HTTP ${res.status})`;
+      return { ok: false, error: errorMsg };
+    }
+
+    const created = await res.json();
+    return { ok: true, data: created };
+  } catch (error) {
+    console.error("Failed to create testimonial:", error);
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Network error creating testimonial",
+    };
+  }
+}
+
+export async function updateTestimonial(
+  id: number,
+  data: TestimonialInput,
+): Promise<{ ok: boolean; data?: Testimonial; error?: string }> {
+  try {
+    const res = await fetch(`${API_URL}/admin/testimonials/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      const errorMsg =
+        errJson.message || errJson.error || `Failed to update testimonial (HTTP ${res.status})`;
+      return { ok: false, error: errorMsg };
+    }
+
+    const updated = await res.json();
+    return { ok: true, data: updated };
+  } catch (error) {
+    console.error("Failed to update testimonial:", error);
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Network error updating testimonial",
+    };
+  }
+}
+
+export async function toggleTestimonialPublish(
+  id: number,
+  published?: boolean,
+): Promise<{ ok: boolean; data?: Testimonial; error?: string }> {
+  try {
+    const query = published !== undefined ? `?published=${published}` : "";
+    const res = await fetch(`${API_URL}/admin/testimonials/${id}/publish${query}`, {
+      method: "PATCH",
+      headers: { ...getAuthHeader() },
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      return {
+        ok: false,
+        error: errJson.message || `Failed to toggle publish status (HTTP ${res.status})`,
+      };
+    }
+
+    const updated = await res.json();
+    return { ok: true, data: updated };
+  } catch (error) {
+    console.error("Failed to toggle testimonial publish:", error);
+    return { ok: false, error: "Network error" };
+  }
+}
+
+export async function deleteTestimonial(id: number): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/admin/testimonials/${id}`, {
+      method: "DELETE",
+      headers: { ...getAuthHeader() },
+    });
+    return res.ok || res.status === 204;
+  } catch (error) {
+    console.error("Failed to delete testimonial:", error);
+    return false;
   }
 }

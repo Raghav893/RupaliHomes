@@ -1,235 +1,96 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  AlertCircle,
-  ExternalLink,
-  Heart,
-  Instagram,
-  MessageCircle,
-  Play,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-
-interface InstagramPost {
-  id: string;
-  image: string;
-  permalink: string;
-  likes?: number;
-  comments?: number;
-  caption?: string;
-  mediaType?: string;
-}
+import { ChevronLeft, ChevronRight, ExternalLink, Instagram, MessageCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { fetchLandingInstagramVideos } from "@/lib/api";
+import { LandingInstagramVideo } from "@/types";
 
 const INSTAGRAM_PROFILE_URL = "https://instagram.com/rupali_homes";
 const INSTAGRAM_DM_URL = "https://ig.me/m/rupali_homes";
 
-const InstagramReels = () => {
-  const [posts, setPosts] = useState<InstagramPost[]>([]);
+export default function InstagramReels() {
+  const [videos, setVideos] = useState<LandingInstagramVideo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchReels = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const res = await fetch("/api/instagram", { cache: "no-store" });
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(data.error || "Unable to load Instagram posts");
-        }
-
-        if (!Array.isArray(data.data) || data.data.length === 0) {
-          throw new Error("No live Instagram posts were returned.");
-        }
-
-        setPosts(data.data);
-      } catch (err) {
-        setPosts([]);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Unable to load Instagram posts",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReels();
+    fetchLandingInstagramVideos()
+      .then(setVideos)
+      .finally(() => setLoading(false));
   }, []);
 
-  const copiesCount = posts.length > 0 && posts.length < 4 ? 4 : 2;
-  const displayPosts = posts.length > 0 ? Array(copiesCount).fill(posts).flat() : [];
-  const shiftPercent = `-${100 / copiesCount}%`;
+  const moveSlider = (distance: number) => {
+    sliderRef.current?.scrollBy({ left: distance, behavior: "smooth" });
+  };
 
   return (
-    <section className="py-14 md:py-24 bg-background overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8 md:mb-12 flex flex-col md:flex-row justify-between items-end gap-5 md:gap-6">
-        <div>
-          <h2 className="text-3xl md:text-5xl font-bold font-syne mb-3 md:mb-4">
+    <section className="relative overflow-hidden bg-background py-14 md:py-24">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.38fr_0.62fr] lg:gap-12">
+        <div className="relative flex flex-col justify-center rounded-3xl border border-white/25 bg-white/65 p-6 shadow-[0_20px_60px_-30px_rgba(20,30,50,0.35)] backdrop-blur-xl [-webkit-backdrop-filter:blur(20px)] sm:p-7">
+          <div className="absolute right-5 top-5 flex h-32 w-32 items-center justify-center rounded-3xl border border-accent-dark/10 bg-white/70 p-5 shadow-sm sm:right-7 sm:top-7 sm:h-36 sm:w-36">
+            <Image src="/logo_rupali.png" alt="Rupali Homes" width={144} height={144} className="h-full w-full object-contain" />
+          </div>
+          <p className="mb-3 pr-28 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Rupali Homes</p>
+          <h2 className="max-w-[18rem] pr-20 text-3xl font-bold font-syne leading-tight text-accent-dark md:text-4xl">
             Follow Us On <span className="text-gold">Instagram</span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl">
-            Live updates from Rupali Homes projects, walkthroughs, site visits,
-            and property advisory conversations.
+          <p className="mt-4 max-w-md text-base leading-relaxed text-gray-600">
+            Browse verified properties across India&apos;s top cities — handpicked for value, location, and potential.
           </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={INSTAGRAM_PROFILE_URL}
-            target="_blank"
-            className="px-6 py-3 bg-white border border-gray-200 rounded-full text-accent-dark font-medium hover:bg-gold hover:text-white hover:border-gold transition-all flex items-center gap-2"
-          >
-            <Instagram size={20} />
-            @rupali_homes
-          </Link>
-          <Link
-            href={INSTAGRAM_DM_URL}
-            target="_blank"
-            className="px-6 py-3 bg-accent-dark border border-accent-dark rounded-full text-white font-medium hover:bg-gold hover:border-gold transition-all flex items-center gap-2"
-          >
-            <MessageCircle size={20} />
-            DM Us
-          </Link>
-        </div>
-      </div>
 
-      {loading && (
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="h-[320px] rounded-2xl border border-gray-100 bg-white flex items-center justify-center text-gray-500">
-            Loading live Instagram posts...
-          </div>
-        </div>
-      )}
-
-      {!loading && error && (
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-800 flex gap-4">
-            <AlertCircle className="shrink-0 mt-1" size={22} />
+          <div className="mt-7 grid grid-cols-2 gap-3 border-y border-accent-dark/10 py-5">
             <div>
-              <p className="font-bold text-accent-dark">
-                Live Instagram feed unavailable
-              </p>
-              <p className="text-sm mt-1">{error}</p>
-              <div className="flex flex-wrap gap-3 mt-4">
-                <Link
-                  href={INSTAGRAM_PROFILE_URL}
-                  target="_blank"
-                  className="text-sm font-semibold underline"
-                >
-                  Open Instagram profile
-                </Link>
-                <Link
-                  href={INSTAGRAM_DM_URL}
-                  target="_blank"
-                  className="text-sm font-semibold underline"
-                >
-                  Send Instagram DM
-                </Link>
-              </div>
+              <p className="text-xl font-semibold text-accent-dark">5k+</p>
+              <p className="mt-1 text-xs text-gray-500">Homes Sold</p>
+            </div>
+            <div>
+              <p className="text-xl font-semibold text-accent-dark">20k+</p>
+              <p className="mt-1 text-xs text-gray-500">Properties Rented</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {!loading && !error && displayPosts.length > 0 && (
-        <div className="relative w-full">
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none hidden md:block" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none hidden md:block" />
-
-          <div className="flex overflow-hidden">
-            <motion.div
-              className="flex gap-6 px-6"
-              animate={{
-                x: ["0%", shiftPercent],
-              }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 40,
-                  ease: "linear",
-                },
-              }}
-            >
-              {displayPosts.map((post, index) => (
-                <article
-                  key={`${post.id}-${index}`}
-                  className="relative group shrink-0 w-[220px] sm:w-[280px] h-[390px] sm:h-[500px] rounded-2xl overflow-hidden bg-gray-100"
-                >
-                  <Image
-                    src={post.image}
-                    alt={post.caption || `Rupali Homes Instagram post ${index + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    unoptimized
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-75 group-hover:opacity-90 transition-opacity" />
-
-                  {post.mediaType === "VIDEO" && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50">
-                        <Play fill="white" className="text-white ml-1" size={32} />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                    {post.caption && (
-                      <p className="text-sm line-clamp-2 mb-4 text-white/90">
-                        {post.caption}
-                      </p>
-                    )}
-
-                    <div className="flex items-center justify-between gap-3 mb-4">
-                      <div className="flex items-center gap-3 text-sm">
-                        {typeof post.likes === "number" && post.likes > 0 && (
-                          <span className="inline-flex items-center gap-1">
-                            <Heart size={15} />
-                            {post.likes}
-                          </span>
-                        )}
-                        <span className="inline-flex items-center gap-1">
-                          <Instagram size={16} />
-                          Live post
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        href={post.permalink}
-                        target="_blank"
-                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-white text-accent-dark px-3 py-2 text-xs font-bold hover:bg-gold hover:text-white transition-colors"
-                      >
-                        <ExternalLink size={14} />
-                        View Post
-                      </Link>
-                      <Link
-                        href={INSTAGRAM_DM_URL}
-                        target="_blank"
-                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-dark text-white px-3 py-2 text-xs font-bold hover:bg-gold transition-colors"
-                      >
-                        <MessageCircle size={14} />
-                        DM Query
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </motion.div>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link href={INSTAGRAM_PROFILE_URL} target="_blank" className="inline-flex items-center gap-2 rounded-full border border-accent-dark/15 bg-white/60 px-5 py-2.5 text-sm font-medium text-accent-dark transition-colors hover:border-gold hover:bg-gold hover:text-white">
+              <Instagram size={18} /> @rupali_homes
+            </Link>
+            <Link href={INSTAGRAM_DM_URL} target="_blank" className="inline-flex items-center gap-2 rounded-full border border-accent-dark bg-accent-dark px-5 py-2.5 text-sm font-medium text-white transition-colors hover:border-gold hover:bg-gold">
+              <MessageCircle size={18} /> DM Us
+            </Link>
           </div>
         </div>
-      )}
+
+        <div className="min-w-0 self-center">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Projects, walkthroughs, and site visits</p>
+              <p className="mt-1 text-xl font-semibold text-accent-dark">Latest from our feed</p>
+            </div>
+            {videos.length > 1 && (
+              <div className="flex shrink-0 gap-2">
+                <button type="button" aria-label="Previous Instagram video" onClick={() => moveSlider(-320)} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-accent-dark transition-colors hover:border-gold hover:bg-gold hover:text-white"><ChevronLeft size={18} /></button>
+                <button type="button" aria-label="Next Instagram video" onClick={() => moveSlider(320)} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-accent-dark transition-colors hover:border-gold hover:bg-gold hover:text-white"><ChevronRight size={18} /></button>
+              </div>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="flex aspect-[9/16] max-h-[620px] min-h-[390px] items-center justify-center rounded-2xl border border-gray-100 bg-white text-gray-500 sm:aspect-auto sm:h-[560px]">Loading Instagram videos...</div>
+          ) : videos.length > 0 ? (
+            <div ref={sliderRef} className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4">
+              {videos.map((video, index) => (
+                <article key={`${video.id}-${index}`} className="relative aspect-[9/16] w-[220px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/20 bg-white/60 shadow-[0_20px_50px_-30px_rgba(20,30,50,0.4)] backdrop-blur-xl sm:w-[250px]">
+                  <iframe src={`${video.embedUrl.replace(/\/+$/, "")}/embed/`} title={`Rupali Homes Instagram video ${index + 1}`} className="absolute inset-0 h-full w-full border-0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen />
+                  <Link href={video.videoUrl} target="_blank" className="absolute bottom-4 left-4 right-4 z-10 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white/90 px-3 py-2 text-xs font-bold text-accent-dark backdrop-blur-sm transition-colors hover:bg-gold hover:text-white"><ExternalLink size={14} /> View on Instagram</Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-gray-200 bg-white/70 p-8 text-center text-gray-500 backdrop-blur-md">Instagram videos will appear here soon.</div>
+          )}
+        </div>
+      </div>
     </section>
   );
-};
-
-export default InstagramReels;
+}

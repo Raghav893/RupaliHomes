@@ -114,6 +114,17 @@ export default function PropertyGridCard({ property, index = 0 }: PropertyGridCa
               {property.type === "RENT" ? "For Rent" : "For Sale"}
             </div>
 
+            {property.status === "SOLD" && (
+              <div className="absolute top-12 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                Sold Out
+              </div>
+            )}
+            {property.status === "RENTED" && (
+              <div className="absolute top-12 left-3 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                Rented Out
+              </div>
+            )}
+
             {/* Action buttons */}
             <div className="absolute top-3 right-3 flex gap-2">
               <button

@@ -11,6 +11,8 @@ import {
   Menu,
   X,
   LogOut,
+  MessageSquareQuote,
+  Instagram,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,16 @@ const sidebarItems = [
     title: "Projects",
     href: "/admin/projects",
     icon: Building2,
+  },
+  {
+    title: "Testimonials",
+    href: "/admin/testimonials",
+    icon: MessageSquareQuote,
+  },
+  {
+    title: "Landing Instagram Videos",
+    href: "/admin/landing-instagram-videos",
+    icon: Instagram,
   },
   {
     title: "Blogs",

@@ -1,0 +1,32 @@
+name: rupali
+
+services:
+  backend:
+    image: rupali-backend:${RUPALI_RELEASE:?Set RUPALI_RELEASE to the deployed image tag}
+    container_name: rupali-backend
+    restart: unless-stopped
+    env_file:
+      - path: ./backend.env
+        format: raw
+    # The direct Supabase address requires the VPS's IPv6 connection.
+    network_mode: host
+    environment:
+      SERVER_ADDRESS: 127.0.0.1
+    mem_limit: 1g
+    cpus: 1.0
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 5s
+      start_period: 90s
+      retries: 3

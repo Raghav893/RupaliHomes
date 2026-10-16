@@ -104,6 +104,7 @@ export default function Services() {
                     src={service.image}
                     alt={service.title}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>

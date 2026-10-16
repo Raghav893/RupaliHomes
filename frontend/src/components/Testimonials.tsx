@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const testimonials = [
   {
@@ -93,6 +94,16 @@ export default function Testimonials() {
             <TestimonialCard key={`row-${idx}`} data={item} />
           ))}
         </div>
+      </div>
+
+      <div className="mt-8 text-center relative z-10">
+        <Link
+          href="/testimonials"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent-dark text-white text-sm font-semibold hover:bg-gold transition-colors shadow-md group"
+        >
+          <span>Explore Video Walkthroughs & Stories</span>
+          <span className="text-gold group-hover:text-white transition-colors">→</span>
+        </Link>
       </div>
     </section>
   );
