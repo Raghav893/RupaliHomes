@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,11 +42,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AdminPropertyServiceImpl implements AdminPropertyService {
+    private static final Set<String> HOME_CATEGORIES = Set.of("apartment", "builder floor", "villa", "penthouse", "studio");
     private final PropertyRepository propertyRepository;
     private final PurchaseRepository purchaseRepository;
     private final RentalRepository rentalRepository;
@@ -55,7 +58,6 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     @Override
     public PropertyResponseDTO createProperty(PropertyCreateDTO dto, String adminEmail) {
         User admin = getAdmin(adminEmail);
-        validateTypeAmounts(dto.getType(), dto.getPrice(), dto.getRentAmount());
 
         Property property = new Property();
         property.setTitle(dto.getTitle());
@@ -113,6 +115,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         property.setAgentPhotoUrl(dto.getAgentPhotoUrl());
         property.setAmenities(dto.getAmenities());
 
+        validatePublicListing(property);
         return toDto(propertyRepository.save(property));
     }
 
@@ -190,6 +193,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         dto.setRentAmount(decimal(row, headers, formatter, "rentamount"));
         dto.setSize(text(row, headers, formatter, "size"));
         dto.setImageUrl(text(row, headers, formatter, "imageurl"));
+        dto.setCoverImage(text(row, headers, formatter, "coverimage"));
         dto.setImageGallery(text(row, headers, formatter, "imagegallery"));
         dto.setBrochureUrl(text(row, headers, formatter, "brochureurl"));
         dto.setBedrooms(integer(row, headers, formatter, "bedrooms"));
@@ -262,7 +266,6 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     public PropertyResponseDTO updateProperty(Long id, PropertyUpdateDTO dto) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
-        validateTypeAmounts(dto.getType(), dto.getPrice(), dto.getRentAmount());
         property.setTitle(dto.getTitle());
         property.setDescription(dto.getDescription());
         property.setPrice(dto.getPrice());
@@ -314,6 +317,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         property.setFurnishingDetails(dto.getFurnishingDetails());
         property.setFurnishingStatus(dto.getFurnishingStatus());
 
+        validatePublicListing(property);
         return toDto(propertyRepository.save(property));
     }
 
@@ -405,12 +409,34 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found"));
     }
 
-    private void validateTypeAmounts(PropertyType type, java.math.BigDecimal price, java.math.BigDecimal rentAmount) {
-        if (type == PropertyType.SALE && (price == null)) {
-            throw new BadRequestException("Price is required for SALE properties");
+    private void validatePublicListing(Property property) {
+        if (!StringUtils.hasText(property.getImageUrl()) && StringUtils.hasText(property.getCoverImage())) {
+            property.setImageUrl(property.getCoverImage().trim());
         }
-        if (type == PropertyType.RENT && (rentAmount == null)) {
-            throw new BadRequestException("Rent amount is required for RENT properties");
+        if (property.getStatus() == PropertyStatus.HIDDEN) return;
+
+        List<String> missing = new ArrayList<>();
+        if (!StringUtils.hasText(property.getCity())) missing.add("city");
+        if (!StringUtils.hasText(property.getLocality())) missing.add("locality");
+        String category = property.getPropertyCategory();
+        if (!StringUtils.hasText(category)) missing.add("property category");
+        boolean rental = property.getType() == PropertyType.RENT;
+        BigDecimal amount = rental ? property.getRentAmount() : property.getPrice();
+        if (amount == null || amount.signum() <= 0) {
+            missing.add(rental ? "monthly rent above zero" : "sale price above zero");
+        }
+        if (property.getSqft() == null || property.getSqft() <= 0) missing.add("area in square feet");
+        if (!StringUtils.hasText(property.getCoverImage()) && !StringUtils.hasText(property.getImageUrl())) {
+            missing.add("cover photo");
+        }
+        String normalizedCategory = category == null ? "" : category.trim().toLowerCase(Locale.ROOT);
+        if (HOME_CATEGORIES.contains(normalizedCategory)) {
+            int minBedrooms = normalizedCategory.equals("studio") ? 0 : 1;
+            if (property.getBedrooms() == null || property.getBedrooms() < minBedrooms) missing.add("bedroom count");
+            if (property.getBathrooms() == null || property.getBathrooms() < 1) missing.add("bathroom count");
+        }
+        if (!missing.isEmpty()) {
+            throw new BadRequestException("Complete the required fields: " + String.join(", ", missing) + ".");
         }
     }
 

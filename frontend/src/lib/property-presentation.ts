@@ -1,4 +1,4 @@
-import type { FloorPlan, GalleryImage, Property } from "@/types";
+import { PropertyStatus, PropertyType, type FloorPlan, type GalleryImage, type Property } from "@/types";
 
 export const DEFAULT_PROPERTY_ACCENT = "#C9B458";
 export const DEFAULT_PROPERTY_THEME = {
@@ -9,6 +9,42 @@ export const DEFAULT_PROPERTY_THEME = {
   themeName: "",
 };
 export const isPropertyAccent = (value: string) => /^#[0-9a-f]{6}$/i.test(value);
+
+const homeCategories = new Set(["apartment", "builder floor", "villa", "penthouse", "studio"]);
+
+export function requiresRoomCounts(category: string): boolean {
+  return homeCategories.has(category.trim().toLowerCase());
+}
+
+export function missingListingDetails(property: Partial<Property>): string[] {
+  const missing: string[] = [];
+  if (!property.title?.trim()) missing.push("title");
+  if (!property.description?.trim()) missing.push("description");
+  if (!property.location?.trim()) missing.push("location");
+  if (property.status === PropertyStatus.HIDDEN) return missing;
+
+  if (!property.city?.trim()) missing.push("city");
+  if (!property.locality?.trim()) missing.push("locality");
+  if (!property.propertyCategory?.trim()) missing.push("property category");
+  const amount = property.type === PropertyType.RENT ? property.rentAmount : property.price;
+  if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
+    missing.push(property.type === PropertyType.RENT ? "monthly rent above zero" : "sale price above zero");
+  }
+  if (typeof property.sqft !== "number" || !Number.isInteger(property.sqft) || property.sqft <= 0) {
+    missing.push("area in square feet");
+  }
+  if (!(property.coverImage?.trim() || property.imageUrl?.trim())) missing.push("cover photo");
+  if (requiresRoomCounts(property.propertyCategory || "")) {
+    const minBedrooms = property.propertyCategory?.trim().toLowerCase() === "studio" ? 0 : 1;
+    if (typeof property.bedrooms !== "number" || !Number.isInteger(property.bedrooms) || property.bedrooms < minBedrooms) {
+      missing.push("bedroom count");
+    }
+    if (typeof property.bathrooms !== "number" || !Number.isInteger(property.bathrooms) || property.bathrooms < 1) {
+      missing.push("bathroom count");
+    }
+  }
+  return missing;
+}
 
 export function validatePropertyPresentation(value: PropertyPresentation): string | undefined {
   if (!isPropertyAccent(value.accentColor)) return "Accent color must use six hexadecimal digits, for example #C9B458.";
@@ -63,7 +99,7 @@ export function normalizeFloorPlans(value: unknown): FloorPlan[] {
 
 export function propertyPresentationFrom(property?: Partial<Property>): PropertyPresentation {
   return {
-    coverImage: property?.coverImage || "", tagline: property?.tagline || "", eyebrow: property?.eyebrow || "",
+    coverImage: property?.coverImage?.trim() || property?.imageUrl?.trim() || "", tagline: property?.tagline || "", eyebrow: property?.eyebrow || "",
     developerName: property?.developerName || "", developerLogo: property?.developerLogo || "", projectStatus: property?.projectStatus || "",
     accentColor: property?.accentColor || DEFAULT_PROPERTY_ACCENT,
     themeDark: property?.themeDark || DEFAULT_PROPERTY_THEME.themeDark,

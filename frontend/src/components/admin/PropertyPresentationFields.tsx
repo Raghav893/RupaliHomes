@@ -142,7 +142,12 @@ export default function PropertyPresentationFields({ value, onChange, brochureUr
     </div>
 
     <div className="grid gap-5 sm:grid-cols-2">
-      <div className="space-y-2"><Field label="Cover image URL" value={value.coverImage} onChange={changeCover} disabled={uploading} /><UploadField label="Upload cover image" disabled={uploading} onFiles={(files) => { cancelAccentPick(); const request = accentRequest.current; void upload(files, async (url, file) => { coverFile.current = { url, file }; update("coverImage", url); await pickAccent(file, request); }); }} /><Preview url={value.coverImage} label="Cover image preview" /></div>
+      <div className="space-y-2">
+        <Field label="Cover image URL *" value={value.coverImage} onChange={changeCover} disabled={uploading} />
+        <UploadField label="Upload cover image" disabled={uploading} onFiles={(files) => { cancelAccentPick(); const request = accentRequest.current; void upload(files, async (url, file) => { coverFile.current = { url, file }; update("coverImage", url); await pickAccent(file, request); }); }} />
+        <p className="text-xs text-gray-600">A public listing needs a cover photo. Its main photo can also serve as the cover.</p>
+        <Preview url={value.coverImage} label="Cover image preview" />
+      </div>
       <div className="space-y-2"><Field label="Developer logo URL" value={value.developerLogo} onChange={(next) => update("developerLogo", next)} disabled={uploading} /><UploadField label="Upload developer logo" disabled={uploading} onFiles={(files) => void upload(files, (url) => update("developerLogo", url))} /><Preview url={value.developerLogo} label="Developer logo preview" /></div>
     </div>
 

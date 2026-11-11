@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -67,7 +66,7 @@ import {
 } from "@/types";
 import Image from "next/image";
 import PropertyPresentationFields from "@/components/admin/PropertyPresentationFields";
-import { propertyPresentationFrom, validatePropertyPresentation } from "@/lib/property-presentation";
+import { missingListingDetails, propertyPresentationFrom, requiresRoomCounts, validatePropertyPresentation } from "@/lib/property-presentation";
 
 const InputField = ({
   label,
@@ -134,6 +133,7 @@ export default function AdminProjects() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [saving, setSaving] = useState(false);
   const [bulkUploading, setBulkUploading] = useState(false);
@@ -330,6 +330,7 @@ export default function AdminProjects() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const statusParam = params.get("status");
+      if (params.get("new") === "1") setShowForm(true);
       if (statusParam && ["SOLD", "RENTED", "AVAILABLE"].includes(statusParam)) {
         setFilterStatus(statusParam);
       }
@@ -352,6 +353,7 @@ export default function AdminProjects() {
 
       if (isMain) {
         setFormImageUrl(url);
+        setPresentation((current) => current.coverImage.trim() ? current : { ...current, coverImage: url });
       } else if (index !== undefined) {
         const newGallery = [...formImageGallery];
         newGallery[index] = url;
@@ -434,32 +436,34 @@ export default function AdminProjects() {
   const openCreateForm = () => {
     if (uploadingMain || uploadingGalleryIdx !== null || presentationUploading) { alert("Wait for the media uploads to finish before opening another property."); return; }
     resetForm();
+    setSaveError("");
     setShowForm(true);
   };
 
   const openEditForm = (p: Property) => {
     if (uploadingMain || uploadingGalleryIdx !== null || presentationUploading) { alert("Wait for the media uploads to finish before opening another property."); return; }
     setPresentation(propertyPresentationFrom(p));
+    setSaveError("");
     setEditingProperty(p);
     setFormTitle(p.title || "");
     setFormDescription(p.description || "");
     setFormLocation(p.location || "");
-    setFormPrice(String(p.price || ""));
-    setFormRentAmount(String(p.rentAmount || ""));
+    setFormPrice(String(p.price ?? ""));
+    setFormRentAmount(String(p.rentAmount ?? ""));
     setFormSize(p.size || "");
     setFormType(p.type);
     setFormStatus(p.status);
     setFormImageUrl(p.imageUrl || "");
     setFormImageGallery(p.imageGallery ? p.imageGallery.split(",") : []);
     setFormBrochureUrl(p.brochureUrl || "");
-    setFormBedrooms(String(p.bedrooms || ""));
-    setFormBathrooms(String(p.bathrooms || ""));
+    setFormBedrooms(String(p.bedrooms ?? ""));
+    setFormBathrooms(String(p.bathrooms ?? ""));
     setFormSqft(String(p.sqft || ""));
     setFormFeatured(p.featured || false);
     setFormTopProperty(p.topProperty || false);
     setFormBuildingType(p.buildingType || "");
     setFormPropertyCategory(p.propertyCategory || "");
-    setFormCity(p.city || "Gurugram");
+    setFormCity(p.city || "");
     setFormMicroMarket(p.microMarket || "");
     setFormLocality(p.locality || "");
     setFormFlooring(p.flooring || "");
@@ -494,25 +498,25 @@ export default function AdminProjects() {
 
   const handleSave = async () => {
     if (saving || uploadingMain || uploadingGalleryIdx !== null || presentationUploading) return;
+    setSaveError("");
     const presentationError = validatePropertyPresentation(presentation);
-    if (presentationError) { alert(presentationError); return; }
-    if (!formTitle || !formDescription || !formLocation) {
-      alert("Title, description, and location are required.");
+    if (presentationError) {
+      setSaveError(presentationError);
       return;
     }
-    if (!confirm("Are you sure you want to save this property?")) return;
-    setSaving(true);
+    const coverImage = presentation.coverImage.trim() || formImageUrl.trim();
     const propertyData: Partial<Property> = {
       ...presentation,
-      title: formTitle,
-      description: formDescription,
-      location: formLocation,
-      price: formPrice ? Number(formPrice) : 0,
-      rentAmount: formRentAmount ? Number(formRentAmount) : 0,
+      coverImage,
+      title: formTitle.trim(),
+      description: formDescription.trim(),
+      location: formLocation.trim(),
+      price: formPrice.trim() ? Number(formPrice) : undefined,
+      rentAmount: formRentAmount.trim() ? Number(formRentAmount) : undefined,
       size: formSize,
       type: formType,
       status: formStatus,
-      imageUrl: formImageUrl || undefined,
+      imageUrl: formImageUrl.trim() || coverImage || undefined,
       imageGallery:
         formImageGallery.length > 0 ? formImageGallery.join(",") : undefined,
       brochureUrl: formBrochureUrl || undefined,
@@ -523,9 +527,9 @@ export default function AdminProjects() {
       topProperty: formTopProperty,
       buildingType: formBuildingType,
       propertyCategory: formPropertyCategory,
-      city: formCity,
+      city: formCity.trim(),
       microMarket: formMicroMarket,
-      locality: formLocality,
+      locality: formLocality.trim(),
       flooring: formFlooring,
       floorNumber: formFloorNumber ? Number(formFloorNumber) : undefined,
       totalFloors: formTotalFloors ? Number(formTotalFloors) : undefined,
@@ -539,6 +543,13 @@ export default function AdminProjects() {
       amenities: formAmenities.join(","),
     };
 
+    const missing = missingListingDetails(propertyData);
+    if (missing.length) {
+      setSaveError(`Complete the required fields: ${missing.join(", ")}.`);
+      return;
+    }
+    if (!confirm("Are you sure you want to save this property?")) return;
+    setSaving(true);
     const result = editingProperty?.id
       ? await updateProperty(editingProperty.id, propertyData)
       : await createProperty(propertyData);
@@ -547,7 +558,7 @@ export default function AdminProjects() {
       upsertPropertyInList(result);
       resetForm();
     } else {
-      alert("Failed to save. Make sure you are logged in as admin.");
+      setSaveError("Could not save the property. Check your sign-in and try again.");
     }
     setSaving(false);
   };
@@ -565,6 +576,17 @@ export default function AdminProjects() {
     property: Property,
     newStatus: PropertyStatus,
   ) => {
+    const missing = missingListingDetails({ ...property, status: newStatus });
+    if (missing.length) {
+      if (uploadingMain || uploadingGalleryIdx !== null || presentationUploading) {
+        alert("Wait for the media uploads to finish before editing another property.");
+        return;
+      }
+      openEditForm(property);
+      setFormStatus(newStatus);
+      setSaveError(`Complete the required fields: ${missing.join(", ")}.`);
+      return;
+    }
     if (
       !confirm(`Are you sure you want to mark this property as ${newStatus}?`)
     )
@@ -655,7 +677,7 @@ export default function AdminProjects() {
             </ul>
           )}
           <p className="mt-2 text-xs text-gray-600">
-            Download the sample for the column structure. Use <code>featured</code> for the landing page, <code>topProperty</code> for Top Properties, and add <code>Newly added</code> in <code>tags</code> for that label.
+            Download the sample for the column structure. Each row needs a title, description, listing type, location, city, locality, property category, square footage, price or rent, and an image URL. Include bedrooms and bathrooms for homes. Use <code>featured</code> for the landing page, <code>topProperty</code> for Top Properties, and <code>Newly added</code> in <code>tags</code> for that label.
           </p>
         </div>
       )}
@@ -809,7 +831,7 @@ export default function AdminProjects() {
             />
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1 text-xs font-medium text-gray-600">
-                <Layers size={12} /> Property Type
+                <Layers size={12} /> Property Category *
               </Label>
               <select
                 value={formPropertyCategory}
@@ -842,6 +864,23 @@ export default function AdminProjects() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <LocationField
+              label="City *"
+              value={formCity}
+              onChange={setFormCity}
+              placeholder="Gurugram"
+              onSelect={(result) => result.city || result.name}
+            />
+            <LocationField
+              label="Locality *"
+              value={formLocality}
+              onChange={setFormLocality}
+              placeholder="Sector 23A"
+              onSelect={(result) => result.name}
+            />
+          </div>
+
           {/* Section 2: Price + Room Details */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
             {formType === PropertyType.SALE ? (
@@ -862,7 +901,7 @@ export default function AdminProjects() {
               />
             )}
             <InputField
-              label="Bedrooms"
+              label={requiresRoomCounts(formPropertyCategory) ? "Bedrooms *" : "Bedrooms"}
               value={formBedrooms}
               onChange={setFormBedrooms}
               placeholder="1"
@@ -870,7 +909,7 @@ export default function AdminProjects() {
               icon={Bed}
             />
             <InputField
-              label="Bathrooms"
+              label={requiresRoomCounts(formPropertyCategory) ? "Bathrooms *" : "Bathrooms"}
               value={formBathrooms}
               onChange={setFormBathrooms}
               placeholder="1"
@@ -878,7 +917,7 @@ export default function AdminProjects() {
               icon={Bath}
             />
             <InputField
-              label="Area (sqft)"
+              label="Area (sqft) *"
               value={formSqft}
               onChange={setFormSqft}
               placeholder="520"
@@ -1097,13 +1136,6 @@ export default function AdminProjects() {
                     <option value="Commercial">Commercial</option>
                   </select>
                 </div>
-                <LocationField
-                  label="City"
-                  value={formCity}
-                  onChange={setFormCity}
-                  placeholder="Gurgaon"
-                  onSelect={(result) => result.city || result.name}
-                />
                 <InputField
                   label="Micro Market"
                   value={formMicroMarket}
@@ -1112,13 +1144,6 @@ export default function AdminProjects() {
                 />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <LocationField
-                  label="Locality"
-                  value={formLocality}
-                  onChange={setFormLocality}
-                  placeholder="Sector 23A"
-                  onSelect={(result) => result.name}
-                />
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-gray-600">
                     Flooring
@@ -1506,6 +1531,7 @@ export default function AdminProjects() {
             />
           </div>
 
+          {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={resetForm}>
               Cancel

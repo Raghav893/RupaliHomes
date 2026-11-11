@@ -199,7 +199,7 @@ export default function PropertyGridCard({ property, index = 0, liked, onLikeCha
             <div className="flex items-center justify-between border-t border-gray-100 pt-4">
               <div className="flex items-center gap-1 sm:gap-1.5 text-gray-600">
                 <Bed size={16} className="text-accent-light" />
-                <span className="text-sm font-semibold">{property.bedrooms || "—"}</span>
+                <span className="text-sm font-semibold">{property.bedrooms ?? "—"}</span>
                 <span className="hidden sm:inline text-xs text-gray-400">Beds</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-1.5 text-gray-600">

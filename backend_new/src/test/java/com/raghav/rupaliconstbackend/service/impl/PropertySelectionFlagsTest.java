@@ -58,6 +58,11 @@ class PropertySelectionFlagsTest {
                 create.setTitle("Selection test");
                 create.setDescription("Property with independent selections");
                 create.setLocation("Gurugram");
+                create.setCity("Gurugram");
+                create.setLocality("Sector 42");
+                create.setPropertyCategory("Plot");
+                create.setSqft(900);
+                create.setImageUrl("https://example.test/plot.jpg");
                 create.setType(PropertyType.SALE);
                 create.setPrice(BigDecimal.TEN);
                 create.setFeatured(featured);
@@ -77,6 +82,11 @@ class PropertySelectionFlagsTest {
                 update.setTitle(create.getTitle());
                 update.setDescription(create.getDescription());
                 update.setLocation(create.getLocation());
+                update.setCity(create.getCity());
+                update.setLocality(create.getLocality());
+                update.setPropertyCategory(create.getPropertyCategory());
+                update.setSqft(create.getSqft());
+                update.setImageUrl(create.getImageUrl());
                 update.setType(PropertyType.SALE);
                 update.setStatus(PropertyStatus.AVAILABLE);
                 update.setPrice(BigDecimal.TEN);

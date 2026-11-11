@@ -11,6 +11,7 @@ import com.raghav.rupaliconstbackend.entity.Property;
 import com.raghav.rupaliconstbackend.entity.PropertyStatus;
 import com.raghav.rupaliconstbackend.entity.PropertyType;
 import com.raghav.rupaliconstbackend.entity.User;
+import com.raghav.rupaliconstbackend.exception.BadRequestException;
 import com.raghav.rupaliconstbackend.model.PropertyFloorPlan;
 import com.raghav.rupaliconstbackend.model.PropertyGalleryImage;
 import com.raghav.rupaliconstbackend.repository.PropertyLikeRepository;
@@ -54,6 +55,12 @@ class PremiumPropertyDetailsTest {
         dto.setTitle("Legacy home");
         dto.setDescription("Existing property description");
         dto.setLocation("Gurugram");
+        dto.setCity("Gurugram");
+        dto.setLocality("Sector 42");
+        dto.setPropertyCategory("Apartment");
+        dto.setBedrooms(2);
+        dto.setBathrooms(2);
+        dto.setSqft(1200);
         dto.setType(PropertyType.SALE);
         dto.setPrice(BigDecimal.TEN);
         dto.setImageUrl("https://example.test/legacy.jpg");
@@ -67,6 +74,12 @@ class PremiumPropertyDetailsTest {
         dto.setTitle("Legacy home, edited");
         dto.setDescription("Existing property description");
         dto.setLocation("Gurugram");
+        dto.setCity("Gurugram");
+        dto.setLocality("Sector 42");
+        dto.setPropertyCategory("Apartment");
+        dto.setBedrooms(2);
+        dto.setBathrooms(2);
+        dto.setSqft(1200);
         dto.setType(PropertyType.SALE);
         dto.setStatus(PropertyStatus.AVAILABLE);
         dto.setPrice(BigDecimal.TEN);
@@ -74,6 +87,46 @@ class PremiumPropertyDetailsTest {
         dto.setImageGallery("https://example.test/one.jpg,https://example.test/two.jpg");
         dto.setBrochureUrl("https://example.test/legacy.pdf");
         return dto;
+    }
+
+    @Test
+    void incompletePropertiesCannotBePublished() {
+        PropertyCreateDTO create = legacyCreate();
+        create.setPrice(BigDecimal.ZERO);
+        create.setImageUrl(null);
+        create.setSqft(null);
+        create.setBedrooms(null);
+        BadRequestException error = assertThrows(BadRequestException.class,
+                () -> admin.createProperty(create, "admin@example.test"));
+        assertTrue(error.getMessage().contains("sale price above zero, area in square feet, cover photo, bedroom count"));
+        verify(properties, never()).save(any(Property.class));
+    }
+
+    @Test
+    void coverOnlyStudioRentalHasCardPhotoAndZeroBedrooms() {
+        PropertyCreateDTO studio = legacyCreate();
+        studio.setType(PropertyType.RENT);
+        studio.setPrice(null);
+        studio.setRentAmount(BigDecimal.valueOf(25000));
+        studio.setPropertyCategory("Studio");
+        studio.setBedrooms(0);
+        studio.setImageUrl(null);
+        studio.setCoverImage("https://example.test/studio.jpg");
+        PropertyResponseDTO created = admin.createProperty(studio, "admin@example.test");
+        assertEquals(studio.getCoverImage(), created.getImageUrl());
+        assertEquals(0, created.getBedrooms());
+    }
+
+    @Test
+    void incompleteListingCanBeHiddenButCannotBeMadeAvailable() {
+        admin.createProperty(legacyCreate(), "admin@example.test");
+        PropertyUpdateDTO update = legacyUpdate();
+        update.setStatus(PropertyStatus.HIDDEN);
+        update.setPrice(null);
+        update.setImageUrl(null);
+        assertEquals(PropertyStatus.HIDDEN, admin.updateProperty(42L, update).getStatus());
+        update.setStatus(PropertyStatus.AVAILABLE);
+        assertThrows(BadRequestException.class, () -> admin.updateProperty(42L, update));
     }
 
     @Test

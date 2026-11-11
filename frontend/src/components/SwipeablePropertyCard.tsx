@@ -178,7 +178,7 @@ export default function SwipeablePropertyCard({
           <div className="flex flex-col items-center justify-center bg-gray-50 rounded-2xl p-4 flex-1 mr-2">
             <Bed size={24} className="text-accent-light mb-1" />
             <span className="text-accent-dark font-bold">
-              {property.bedrooms || "-"}
+              {property.bedrooms ?? "-"}
             </span>
             <span className="text-xs text-gray-500">Beds</span>
           </div>
@@ -192,7 +192,7 @@ export default function SwipeablePropertyCard({
           <div className="flex flex-col items-center justify-center bg-gray-50 rounded-2xl p-4 flex-1 ml-2">
             <Square size={24} className="text-accent-light mb-1" />
             <span className="text-accent-dark font-bold">
-              {property.areaSqFt ? `${property.areaSqFt}` : "-"}
+              {property.sqft ?? (property.areaSqFt ? String(property.areaSqFt) : "-")}
             </span>
             <span className="text-xs text-gray-500">Sq Ft</span>
           </div>
