@@ -22,7 +22,7 @@ export default function PropertyGridCard({ property, index = 0, liked, onLikeCha
   const [localHasLiked, setLocalHasLiked] = useState(false);
   const hasLiked = liked ?? localHasLiked;
   const [reactionsCount, setReactionsCount] = useState(property.reactionsCount || 0);
-  const { addToCompare, compareItems } = useCompare();
+  const { addToCompare, removeFromCompare, compareItems } = useCompare();
   const isCompared = compareItems.some((p) => p.id === property.id);
 
   useEffect(() => {
@@ -112,6 +112,10 @@ export default function PropertyGridCard({ property, index = 0, liked, onLikeCha
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
+            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
+              {property.topProperty && <span className="rounded-full bg-accent-dark px-2.5 py-1 text-[10px] font-semibold text-white">Top property</span>}
+              {property.tags?.split(",").some((tag) => tag.trim().toLowerCase() === "newly added") && <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-800">Newly added</span>}
+            </div>
             {/* Type badge */}
             <div className="absolute top-3 left-3 bg-gold text-accent-dark text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
               {property.type === "RENT" ? "For Rent" : "For Sale"}
@@ -134,14 +138,17 @@ export default function PropertyGridCard({ property, index = 0, liked, onLikeCha
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (!isCompared) addToCompare(property);
+                  if (isCompared && property.id !== undefined) removeFromCompare(property.id);
+                  else addToCompare(property);
                 }}
-                className={`backdrop-blur-md rounded-full p-2.5 transition-all duration-300 shadow-md ${
+                className={`min-h-11 min-w-11 scroll-mt-32 scroll-mb-44 backdrop-blur-md rounded-full p-2.5 transition-all duration-300 shadow-md ${
                   isCompared
                     ? "bg-gold text-white"
                     : "bg-white/30 text-white hover:bg-gold hover:text-white"
                 }`}
                 title={isCompared ? "Added to compare" : "Compare"}
+                aria-label={`${isCompared ? "Remove" : "Add"} ${property.title} ${isCompared ? "from" : "to"} comparison`}
+                aria-pressed={isCompared}
               >
                 <Scale size={16} />
               </button>

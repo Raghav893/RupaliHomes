@@ -13,6 +13,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import com.raghav.rupaliconstbackend.model.PropertyGalleryImage;
+import com.raghav.rupaliconstbackend.model.PropertyFloorPlan;
+import java.util.List;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -65,12 +70,50 @@ public class Property {
     @Column(length = 1000)
     private String brochureUrl;
 
+
+    // Optional premium property presentation; existing media fields remain independent.
+    @Column(length = 1000)
+    private String coverImage;
+    private String tagline;
+    private String eyebrow;
+    private String developerName;
+    @Column(length = 1000)
+    private String developerLogo;
+    private String projectStatus;
+    @Column(length = 7)
+    private String accentColor = "#C9B458";
+    @Column(length = 7)
+    private String themeDark = "#1c3a32";
+    @Column(length = 7)
+    private String themeDarker = "#12261f";
+    @Column(length = 7)
+    private String themeLight = "#f5f2e9";
+    private String themeName;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<PropertyGalleryImage> galleryImages;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<PropertyFloorPlan> floorPlans;
+    private Long brochureFileSize;
+    @Column(length = 1000)
+    private String brochureSourceUrl;
+    @Column(length = 1000)
+    private String brochurePreviewImage;
+    private String reraNumber;
+    @Column(length = 4000)
+    private String registrationsText;
+
     // ── Room details ─────────────────────────────────
     private Integer bedrooms;
     private Integer bathrooms;
     private Integer sqft;
     @Column(nullable = false)
     private boolean featured = false;
+
+    @Column(name = "top_property", nullable = false, columnDefinition = "boolean default false")
+    private boolean topProperty = false;
 
     // ── Extended real estate fields ──────────────────
     private String buildingType;       // e.g. "Residential", "Commercial"

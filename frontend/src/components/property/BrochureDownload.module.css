@@ -1,0 +1,6 @@
+.wrapper { display: inline-flex; flex-direction: column; align-items: stretch; gap: 8px; vertical-align: top; max-width: 100%; }
+.error { display: block; max-width: 280px; color: inherit; font-size: 11px; font-weight: 400; line-height: 1.6; }
+.wrapper a[aria-disabled] { cursor: wait; opacity: .7; }
+.spinner { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

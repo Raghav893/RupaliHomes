@@ -50,7 +50,7 @@ function RentPageContent() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const applySearchFilters = useCallback((newFilters: SearchFilters) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ city: "Gurugram" });
     const price = parsePriceRange(newFilters.priceRange);
     if (newFilters.location.trim()) params.set("location", newFilters.location.trim());
     if (newFilters.propertyType) params.set("propertyType", newFilters.propertyType);
@@ -78,7 +78,7 @@ function RentPageContent() {
   useEffect(() => {
       const q = searchParams.get("q");
       const city = searchParams.get("city");
-      const urlLocation = searchParams.get("location") || [q, city].filter(Boolean).join(", ");
+      const urlLocation = searchParams.get("location") || q || searchParams.get("locality") || "";
       
       const urlPropertyType = searchParams.get("propertyType") || searchParams.get("type");
       const urlMinPrice = searchParams.get("minPrice");
@@ -92,15 +92,14 @@ function RentPageContent() {
         "rent"
       );
       
-      setFilters((prev) => ({
-        ...prev,
-        ...(urlLocation && { location: urlLocation }),
-        ...(urlPropertyType && { propertyType: urlPropertyType }),
-        ...(urlMinPrice && { minPrice: urlMinPrice }),
-        ...(urlMaxPrice && { maxPrice: urlMaxPrice }),
-        ...(urlBedrooms && { bedrooms: urlBedrooms }),
-        ...(priceLabel && { priceRange: priceLabel }),
-      }));
+      setFilters({
+        location: urlLocation || "",
+        propertyType: urlPropertyType || "",
+        minPrice: urlMinPrice || "",
+        maxPrice: urlMaxPrice || "",
+        bedrooms: urlBedrooms || "",
+        priceRange: priceLabel || "",
+      });
       setPage(0);
       setCurrentIndex(0);
   }, [searchParams]);
@@ -125,7 +124,9 @@ function RentPageContent() {
     try {
       const data = await fetchProperties(page, 12, {
         type: PropertyType.RENT,
-        search: filters.location || undefined,
+        city: "Gurugram",
+        location: searchParams.get("locality") || undefined,
+        search: filters.location === searchParams.get("locality") ? undefined : filters.location || undefined,
         propertyCategory: filters.propertyType || undefined,
         minPrice: minPrice,
         maxPrice: maxPrice,
@@ -147,7 +148,7 @@ function RentPageContent() {
         setLoading(false);
       }
     }
-  }, [filters, page]);
+  }, [filters, page, searchParams]);
 
   useEffect(() => {
     applyFilters();

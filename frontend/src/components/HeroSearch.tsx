@@ -3,20 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import LocationAutocomplete from "@/components/LocationAutocomplete";
+import GurugramLocalitySelect from "@/components/GurugramLocalitySelect";
 
-const cities = [
-  "All Cities",
-  "Gurgaon",
-  "Delhi",
-  "Noida",
-  "Mumbai",
-  "Bangalore",
-  "Hyderabad",
-  "Pune",
-  "Chennai",
-  "Kolkata",
-];
 
 const budgetRanges = {
   buy: [
@@ -70,7 +58,7 @@ export default function HeroSearch({
   const [activeTab, setActiveTab] = useState<
     "buy" | "rent" | "projects" | "plot" | "commercial"
   >("buy");
-  const [selectedCity, setSelectedCity] = useState("All Cities");
+  const [selectedCity, setSelectedCity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBudget, setSelectedBudget] = useState("");
   const [selectedConfig, setSelectedConfig] = useState("");
@@ -85,7 +73,6 @@ export default function HeroSearch({
   }, [activeTab, onTabChange]);
 
   // Dropdown visibility
-  const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
   const [showConfigDropdown, setShowConfigDropdown] = useState(false);
   const [showPropertyTypeDropdown, setShowPropertyTypeDropdown] =
@@ -93,7 +80,6 @@ export default function HeroSearch({
   const [showPossessionDropdown, setShowPossessionDropdown] = useState(false);
 
   // Refs for closing dropdowns on outside click
-  const cityRef = useRef<HTMLDivElement>(null);
   const budgetRef = useRef<HTMLDivElement>(null);
   const configRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
@@ -102,8 +88,6 @@ export default function HeroSearch({
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (cityRef.current && !cityRef.current.contains(e.target as Node))
-        setShowCityDropdown(false);
       if (budgetRef.current && !budgetRef.current.contains(e.target as Node))
         setShowBudgetDropdown(false);
       if (configRef.current && !configRef.current.contains(e.target as Node))
@@ -128,7 +112,7 @@ export default function HeroSearch({
     "Search by Project...",
     "Search by Locality...",
     "Search by Landmark...",
-    "Search by City...",
+    "Search in Gurugram...",
   ];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
@@ -163,7 +147,8 @@ export default function HeroSearch({
       params.set("q", searchQuery);
       params.set("location", searchQuery);
     }
-    if (selectedCity !== "All Cities") params.set("city", selectedCity);
+    params.set("city", "Gurugram");
+    if (selectedCity) params.set("locality", selectedCity);
     
     let rawMinPrice = "";
     let rawMaxPrice = "";
@@ -203,7 +188,7 @@ export default function HeroSearch({
   };
 
   return (
-    <div className="w-full max-w-full mt-8 mb-8 md:mt-20 md:mb-20 relative z-20">
+    <div className="w-full max-w-full mt-8 md:mt-20 relative z-20">
       {/* Tabs */}
       <div className="hero-tabs grid grid-cols-3 md:grid-cols-5 bg-slate-900/80 backdrop-blur-md rounded-t-lg border-b border-white/10 overflow-hidden">
         {tabs.map((tab) => (
@@ -223,53 +208,20 @@ export default function HeroSearch({
 
       {/* Search Bar Container */}
       <div className="bg-white rounded-b-xl rounded-tr-xl shadow-xl p-1.5 flex flex-col md:flex-row items-stretch md:items-center gap-1.5">
-        {/* City Selector Dropdown */}
-        <div
-          ref={cityRef}
-          className="relative w-full md:w-auto min-w-0 md:min-w-[150px] border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2.5 min-h-11 md:min-h-0 cursor-pointer hover:bg-gray-50 rounded-lg group"
-          onClick={() => setShowCityDropdown(!showCityDropdown)}
-        >
-          <div className="flex items-center justify-between text-gray-700 font-bold text-sm">
-            {selectedCity}
-            <ChevronDown
-              size={16}
-              className={`text-gray-400 transition-transform ${showCityDropdown ? "rotate-180" : ""}`}
-            />
-          </div>
-
-          {/* City Dropdown */}
-          {showCityDropdown && (
-            <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-2 max-h-64 overflow-y-auto">
-              {cities.map((city) => (
-                <button
-                  key={city}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedCity(city);
-                    setShowCityDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
-                    selectedCity === city
-                      ? "text-gold font-semibold bg-gold/5"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {city}
-                </button>
-              ))}
-            </div>
-          )}
+        <div className="w-full md:w-[190px] shrink-0 border-b md:border-b-0 md:border-r border-gray-200 px-2">
+          <GurugramLocalitySelect value={selectedCity} onChange={setSelectedCity} label="Search locality in Gurgaon / Gurugram" className="w-full min-h-11 bg-white text-sm font-medium text-accent-dark outline-none focus-visible:ring-2 focus-visible:ring-gold" />
         </div>
 
         {/* Main Search Input */}
         <div className="grow w-full relative flex items-center px-2">
           <Search className="text-gray-400 w-4 h-4 absolute left-3.5" />
-          <LocationAutocomplete
+          <input
+            aria-label="Search project or landmark in Gurugram"
             value={searchQuery}
-            onChange={setSearchQuery}
-            onEnter={handleSearch}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            onKeyDown={(event) => { if (event.key === "Enter") handleSearch(); }}
             placeholder={placeholders[currentPlaceholderIndex]}
-            inputClassName="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
+            className="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
           />
         </div>
 

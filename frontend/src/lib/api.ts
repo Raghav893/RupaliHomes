@@ -1,4 +1,5 @@
 import { Property, PropertyType, PropertyStatus, ContactFormSubmission, Blog, Inquiry, DashboardStats, Testimonial, TestimonialInput, LandingInstagramVideo } from "../types";
+import { propertyPresentationFrom } from "@/lib/property-presentation";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.rupalihomes.com";
 
@@ -22,6 +23,10 @@ function normalizePropertyStatus(status: unknown): PropertyStatus {
 }
 
 type PropertySearchFilters = {
+  city?: string;
+  featured?: boolean;
+  topProperty?: boolean;
+  tag?: string;
   type?: PropertyType;
   status?: PropertyStatus;
   minPrice?: number;
@@ -102,12 +107,17 @@ export async function fetchAdminProperties(
 export async function fetchProperties(
   page = 0,
   size = 12,
-  filters?: PropertySearchFilters
+  filters?: PropertySearchFilters,
+  options?: { signal?: AbortSignal; throwOnError?: boolean },
 ): Promise<{ content: Property[]; totalPages: number; totalElements: number }> {
   try {
     const params = new URLSearchParams();
     params.set("page", String(page));
     params.set("size", String(size));
+    if (filters?.tag) params.set("tag", filters.tag);
+    if (filters?.city) params.set("city", filters.city);
+    if (filters?.featured !== undefined) params.set("featured", String(filters.featured));
+    if (filters?.topProperty !== undefined) params.set("topProperty", String(filters.topProperty));
     if (filters?.type) params.set("type", filters.type);
     if (filters?.status) params.set("status", filters.status);
     if (filters?.minPrice !== undefined) params.set("minPrice", String(filters.minPrice));
@@ -115,15 +125,14 @@ export async function fetchProperties(
     if (filters?.location) params.set("location", filters.location);
     if (filters?.search) {
       params.set("search", filters.search);
-      // Keep location populated for older backend deployments while the new
-      // full-text search endpoint is rolled out.
-      if (!filters.location) params.set("location", filters.search);
     }
     if (filters?.propertyCategory && filters.propertyCategory !== "Any Type") params.set("propertyCategory", filters.propertyCategory);
     if (filters?.bedrooms !== undefined) params.set("bedrooms", String(filters.bedrooms));
     if (filters?.bedrooms !== undefined) params.set("minBedrooms", String(filters.bedrooms));
 
-    const res = await fetch(`${API_URL}/properties?${params.toString()}`);
+    const res = await fetch(`${API_URL}/properties?${params.toString()}`, {
+      signal: options?.signal,
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
@@ -150,6 +159,7 @@ export async function fetchProperties(
       totalElements,
     };
   } catch (error) {
+    if (options?.throwOnError) throw error;
     console.error("Failed to fetch properties:", error);
     return { content: [], totalPages: 0, totalElements: 0 };
   }
@@ -272,6 +282,8 @@ export async function fetchDashboardStats(): Promise<DashboardStats | null> {
 
 function buildPropertyPayload(property: Partial<Property>) {
   return {
+    ...propertyPresentationFrom(property),
+    brochureFileSize: property.brochureFileSize ?? null,
     title: property.title,
     description: property.description,
     price: property.price || 0,
@@ -286,6 +298,7 @@ function buildPropertyPayload(property: Partial<Property>) {
     bathrooms: property.bathrooms || null,
     sqft: property.sqft || null,
     featured: property.featured || false,
+    topProperty: property.topProperty || false,
     buildingType: property.buildingType || "",
     propertyCategory: property.propertyCategory || "",
     city: property.city || "",
@@ -309,6 +322,7 @@ function buildPropertyPayload(property: Partial<Property>) {
 
 function mapPropertyFromBackend(dto: Record<string, unknown>): Property {
   return {
+    ...propertyPresentationFrom(dto as Partial<Property>),
     id: dto.id as number,
     title: (dto.title as string) || "",
     description: (dto.description as string) || "",
@@ -323,19 +337,20 @@ function mapPropertyFromBackend(dto: Record<string, unknown>): Property {
     imageUrl: (dto.imageUrl as string) || undefined,
     imageGallery: (dto.imageGallery as string) || undefined,
     brochureUrl: (dto.brochureUrl as string) || undefined,
-    bedrooms: dto.bedrooms ? Number(dto.bedrooms) : undefined,
-    bathrooms: dto.bathrooms ? Number(dto.bathrooms) : undefined,
+    bedrooms: dto.bedrooms === null || dto.bedrooms === undefined ? undefined : Number(dto.bedrooms),
+    bathrooms: dto.bathrooms === null || dto.bathrooms === undefined ? undefined : Number(dto.bathrooms),
     sqft: dto.sqft ? Number(dto.sqft) : undefined,
     featured: (dto.featured as boolean) || false,
+    topProperty: dto.topProperty === true,
     buildingType: (dto.buildingType as string) || undefined,
     propertyCategory: (dto.propertyCategory as string) || undefined,
     city: (dto.city as string) || undefined,
     microMarket: (dto.microMarket as string) || undefined,
     locality: (dto.locality as string) || undefined,
     flooring: (dto.flooring as string) || undefined,
-    floorNumber: dto.floorNumber ? Number(dto.floorNumber) : undefined,
-    totalFloors: dto.totalFloors ? Number(dto.totalFloors) : undefined,
-    unitNumber: dto.unitNumber ? Number(dto.unitNumber) : undefined,
+    floorNumber: dto.floorNumber === null || dto.floorNumber === undefined ? undefined : Number(dto.floorNumber),
+    totalFloors: dto.totalFloors === null || dto.totalFloors === undefined ? undefined : Number(dto.totalFloors),
+    unitNumber: dto.unitNumber === null || dto.unitNumber === undefined ? undefined : Number(dto.unitNumber),
     availableFrom: (dto.availableFrom as string) || undefined,
     tags: (dto.tags as string) || undefined,
     furnishingDetails: (dto.furnishingDetails as string) || undefined,

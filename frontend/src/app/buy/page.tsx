@@ -72,7 +72,7 @@ function BuyPageContent() {
   const viewMode = isMobile ? mobileViewMode : "grid";
 
   const applySearchFilters = useCallback((newFilters: SearchFilters) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ city: "Gurugram" });
     const price = parsePriceRange(newFilters.priceRange);
     if (newFilters.location.trim()) params.set("location", newFilters.location.trim());
     if (newFilters.propertyType) params.set("propertyType", newFilters.propertyType);
@@ -100,7 +100,7 @@ function BuyPageContent() {
   useEffect(() => {
     const q = searchParams.get("q");
     const city = searchParams.get("city");
-    const urlLocation = searchParams.get("location") || [q, city].filter(Boolean).join(", ");
+    const urlLocation = searchParams.get("location") || q || searchParams.get("locality") || "";
     const urlPropertyType = searchParams.get("propertyType") || searchParams.get("type");
     const urlMinPrice = searchParams.get("minPrice");
     const urlMaxPrice = searchParams.get("maxPrice");
@@ -150,7 +150,9 @@ function BuyPageContent() {
     try {
       const data = await fetchProperties(page, 12, {
         type: PropertyType.SALE,
-        search: filters.location || undefined,
+        city: "Gurugram",
+        location: searchParams.get("locality") || undefined,
+        search: filters.location === searchParams.get("locality") ? undefined : filters.location || undefined,
         propertyCategory: filters.propertyType || undefined,
         minPrice: minPrice,
         maxPrice: maxPrice,
@@ -172,7 +174,7 @@ function BuyPageContent() {
         setLoading(false);
       }
     }
-  }, [filters, page]);
+  }, [filters, page, searchParams]);
 
   useEffect(() => {
     applyFilters();

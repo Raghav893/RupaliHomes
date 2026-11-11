@@ -44,7 +44,11 @@ public class PropertyController {
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String propertyCategory,
-            @RequestParam(required = false) @Min(0) @Max(50) Integer minBedrooms
+            @RequestParam(required = false) @Min(0) @Max(50) Integer minBedrooms,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Boolean featured,
+            @RequestParam(required = false) Boolean topProperty,
+            @RequestParam(required = false) String tag
     ) {
         String safeSort = switch (sortBy) {
             case "createdAt", "price", "rentAmount", "title" -> sortBy;
@@ -56,7 +60,7 @@ public class PropertyController {
         Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(
                 propertyService.getAvailableProperties(pageable, type, status, minPrice, maxPrice, minRent, maxRent,
-                        location, search, propertyCategory, minBedrooms)
+                        location, search, propertyCategory, minBedrooms, city, featured, topProperty, tag)
         );
     }
 

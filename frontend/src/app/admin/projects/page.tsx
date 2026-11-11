@@ -66,6 +66,8 @@ import {
   DashboardStats,
 } from "@/types";
 import Image from "next/image";
+import PropertyPresentationFields from "@/components/admin/PropertyPresentationFields";
+import { propertyPresentationFrom, validatePropertyPresentation } from "@/lib/property-presentation";
 
 const InputField = ({
   label,
@@ -150,6 +152,8 @@ export default function AdminProjects() {
 
   // Upload state
   const [uploadingMain, setUploadingMain] = useState(false);
+  const [presentationUploading, setPresentationUploading] = useState(false);
+  const [presentation, setPresentation] = useState(() => propertyPresentationFrom());
   const [uploadingGalleryIdx, setUploadingGalleryIdx] = useState<number | null>(
     null,
   );
@@ -172,11 +176,12 @@ export default function AdminProjects() {
   const [formBathrooms, setFormBathrooms] = useState("");
   const [formSqft, setFormSqft] = useState("");
   const [formFeatured, setFormFeatured] = useState(false);
+  const [formTopProperty, setFormTopProperty] = useState(false);
 
   // Form state — extended
   const [formBuildingType, setFormBuildingType] = useState("");
   const [formPropertyCategory, setFormPropertyCategory] = useState("");
-  const [formCity, setFormCity] = useState("");
+  const [formCity, setFormCity] = useState("Gurugram");
   const [formMicroMarket, setFormMicroMarket] = useState("");
   const [formLocality, setFormLocality] = useState("");
   const [formFlooring, setFormFlooring] = useState("");
@@ -382,6 +387,8 @@ export default function AdminProjects() {
   };
 
   const resetForm = () => {
+    setPresentation(propertyPresentationFrom());
+    setPresentationUploading(false);
     setFormTitle("");
     setFormDescription("");
     setFormLocation("");
@@ -397,9 +404,10 @@ export default function AdminProjects() {
     setFormBathrooms("");
     setFormSqft("");
     setFormFeatured(false);
+    setFormTopProperty(false);
     setFormBuildingType("");
     setFormPropertyCategory("");
-    setFormCity("");
+    setFormCity("Gurugram");
     setFormMicroMarket("");
     setFormLocality("");
     setFormFlooring("");
@@ -424,11 +432,14 @@ export default function AdminProjects() {
   };
 
   const openCreateForm = () => {
+    if (uploadingMain || uploadingGalleryIdx !== null || presentationUploading) { alert("Wait for the media uploads to finish before opening another property."); return; }
     resetForm();
     setShowForm(true);
   };
 
   const openEditForm = (p: Property) => {
+    if (uploadingMain || uploadingGalleryIdx !== null || presentationUploading) { alert("Wait for the media uploads to finish before opening another property."); return; }
+    setPresentation(propertyPresentationFrom(p));
     setEditingProperty(p);
     setFormTitle(p.title || "");
     setFormDescription(p.description || "");
@@ -445,9 +456,10 @@ export default function AdminProjects() {
     setFormBathrooms(String(p.bathrooms || ""));
     setFormSqft(String(p.sqft || ""));
     setFormFeatured(p.featured || false);
+    setFormTopProperty(p.topProperty || false);
     setFormBuildingType(p.buildingType || "");
     setFormPropertyCategory(p.propertyCategory || "");
-    setFormCity(p.city || "");
+    setFormCity(p.city || "Gurugram");
     setFormMicroMarket(p.microMarket || "");
     setFormLocality(p.locality || "");
     setFormFlooring(p.flooring || "");
@@ -481,6 +493,9 @@ export default function AdminProjects() {
   };
 
   const handleSave = async () => {
+    if (saving || uploadingMain || uploadingGalleryIdx !== null || presentationUploading) return;
+    const presentationError = validatePropertyPresentation(presentation);
+    if (presentationError) { alert(presentationError); return; }
     if (!formTitle || !formDescription || !formLocation) {
       alert("Title, description, and location are required.");
       return;
@@ -488,6 +503,7 @@ export default function AdminProjects() {
     if (!confirm("Are you sure you want to save this property?")) return;
     setSaving(true);
     const propertyData: Partial<Property> = {
+      ...presentation,
       title: formTitle,
       description: formDescription,
       location: formLocation,
@@ -504,6 +520,7 @@ export default function AdminProjects() {
       bathrooms: formBathrooms ? Number(formBathrooms) : undefined,
       sqft: formSqft ? Number(formSqft) : undefined,
       featured: formFeatured,
+      topProperty: formTopProperty,
       buildingType: formBuildingType,
       propertyCategory: formPropertyCategory,
       city: formCity,
@@ -638,7 +655,7 @@ export default function AdminProjects() {
             </ul>
           )}
           <p className="mt-2 text-xs text-gray-600">
-            Use <code>properties_bulk_upload_sample.xlsx</code> in the repository root for the required column structure.
+            Download the sample for the column structure. Use <code>featured</code> for the landing page, <code>topProperty</code> for Top Properties, and add <code>Newly added</code> in <code>tags</code> for that label.
           </p>
         </div>
       )}
@@ -926,13 +943,7 @@ export default function AdminProjects() {
               <Label className="flex items-center gap-1 text-xs font-medium text-gray-600">
                 <FileDown size={12} /> Brochure (PDF)
               </Label>
-              <Input
-                value={formBrochureUrl}
-                onChange={(e) => setFormBrochureUrl(e.target.value)}
-                placeholder="https://example.com/brochure.pdf"
-                className="h-9 text-sm"
-              />
-              {/* Optional: You can implement a document upload similar to image upload if needed */}
+              <p className="text-xs leading-6 text-gray-500">Manage the PDF, source link, and preview image in Property page presentation below.</p>
             </div>
           </div>
 
@@ -1000,7 +1011,7 @@ export default function AdminProjects() {
             </div>
           </div>
 
-          {/* Section 4: Featured + Tags */}
+          {/* Section 4: Independent listing placement and labels */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-gray-600">
@@ -1016,21 +1027,24 @@ export default function AdminProjects() {
                 Comma-separated tags shown as badges
               </p>
             </div>
-            <div className="flex items-end gap-4">
-              <label className="flex items-center gap-2 cursor-pointer h-9">
-                <div
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${formFeatured ? "bg-accent-dark border-accent-dark" : "border-gray-300"}`}
-                  onClick={() => setFormFeatured(!formFeatured)}
-                >
-                  {formFeatured && (
-                    <CheckCircle size={14} className="text-white" />
-                  )}
-                </div>
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Star size={14} className="text-yellow-500" /> Featured
-                  Listing
-                </span>
+            <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
+              <label className="flex items-center gap-2 cursor-pointer min-h-11">
+                <input type="checkbox" checked={formFeatured} onChange={(event) => setFormFeatured(event.target.checked)} className="size-4 accent-orange-600" />
+                <span className="text-sm font-medium">Featured on landing page</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer min-h-11">
+                <input type="checkbox" checked={formTopProperty} onChange={(event) => setFormTopProperty(event.target.checked)} className="size-4 accent-orange-600" />
+                <span className="text-sm font-medium">Top property</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer min-h-11">
+                <input type="checkbox" checked={formTags.split(",").some((tag) => tag.trim().toLowerCase() === "newly added")} onChange={(event) => {
+                  const tags = formTags.split(",").map((tag) => tag.trim()).filter((tag) => tag && tag.toLowerCase() !== "newly added");
+                  if (event.target.checked) tags.push("Newly added");
+                  setFormTags(tags.join(", "));
+                }} className="size-4 accent-orange-600" />
+                <span className="text-sm font-medium">Newly added</span>
+              </label>
+              <p className="w-full text-xs leading-relaxed text-gray-500">Featured controls the landing-page selection. Top property controls the Top Properties page. Select either or both.</p>
               {editingProperty && (
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-gray-600">
@@ -1054,6 +1068,8 @@ export default function AdminProjects() {
               )}
             </div>
           </div>
+
+          <PropertyPresentationFields value={presentation} onChange={setPresentation} brochureUrl={formBrochureUrl} onBrochureUrlChange={setFormBrochureUrl} onUploadingChange={setPresentationUploading} />
 
           {/* Advanced Details Toggle */}
           <button
@@ -1497,7 +1513,7 @@ export default function AdminProjects() {
             <Button
               className="bg-accent-dark hover:bg-accent-dark/90 text-white gap-2"
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || uploadingMain || uploadingGalleryIdx !== null || presentationUploading}
             >
               {saving && <RefreshCw size={14} className="animate-spin" />}
               {editingProperty ? "Update Property" : "Create Property"}
@@ -1556,7 +1572,7 @@ export default function AdminProjects() {
                         </div>
                       )}
                       {property.featured && (
-                        <div className="absolute top-0 right-0 bg-yellow-400 rounded-bl p-0.5">
+                        <div title="Featured on landing page" className="absolute top-0 right-0 bg-yellow-400 rounded-bl p-0.5">
                           <Star size={8} className="text-white" />
                         </div>
                       )}
@@ -1565,6 +1581,7 @@ export default function AdminProjects() {
                   <TableCell className="font-medium text-accent-dark max-w-[200px]">
                     <div className="flex items-center gap-1">
                       <span className="truncate">{property.title}</span>
+                      {property.topProperty && <span className="shrink-0 rounded bg-orange-50 px-1.5 py-0.5 text-[9px] font-semibold text-orange-700">Top</span>}
                       {property.featured && (
                         <Star
                           size={10}
@@ -1718,6 +1735,7 @@ export default function AdminProjects() {
                         size="icon"
                         className="h-8 w-8 text-blue-600 hover:bg-blue-50"
                         onClick={() => openEditForm(property)}
+                        aria-label={`Edit ${property.title}`}
                       >
                         <Edit size={16} />
                       </Button>

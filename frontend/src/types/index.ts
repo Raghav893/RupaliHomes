@@ -45,6 +45,22 @@ export enum ProjectStage {
   NearToPossession = "NearToPossession",
 }
 
+export interface GalleryImage {
+  url: string;
+  caption?: string;
+  order: number;
+}
+
+export interface FloorPlan {
+  title: string;
+  imageUrl: string;
+  totalArea?: number;
+  carpetArea?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  order: number;
+}
+
 export interface Property {
   id?: number;
   title: string;
@@ -60,12 +76,31 @@ export interface Property {
   imageUrl?: string;
   imageGallery?: string; // Comma-separated extra images
   brochureUrl?: string;
+  coverImage?: string;
+  tagline?: string;
+  eyebrow?: string;
+  developerName?: string;
+  developerLogo?: string;
+  projectStatus?: string;
+  accentColor?: string;
+  themeDark?: string;
+  themeDarker?: string;
+  themeLight?: string;
+  themeName?: string;
+  galleryImages?: GalleryImage[];
+  floorPlans?: FloorPlan[];
+  brochureFileSize?: number;
+  brochureSourceUrl?: string;
+  brochurePreviewImage?: string;
+  reraNumber?: string;
+  registrationsText?: string;
 
   // Room details
   bedrooms?: number;
   bathrooms?: number;
   sqft?: number;
   featured?: boolean;
+  topProperty?: boolean;
 
   // Extended real estate fields
   buildingType?: string;

@@ -16,6 +16,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,21 +32,38 @@ public class PropertyServiceImpl implements PropertyService {
     public Page<PropertyResponseDTO> getAvailableProperties(Pageable pageable, PropertyType type, PropertyStatus status,
                                                             BigDecimal minPrice, BigDecimal maxPrice, BigDecimal minRent,
                                                             BigDecimal maxRent, String location, String search,
-                                                            String propertyCategory, Integer minBedrooms) {
+                                                            String propertyCategory, Integer minBedrooms, String city, Boolean featured, Boolean topProperty, String tag) {
         PropertyStatus effectiveStatus = status != null ? status : PropertyStatus.AVAILABLE;
         Specification<Property> spec =
                 (root, query, cb) -> cb.equal(root.get("status"), effectiveStatus);
 
+        if (tag != null && !tag.isBlank()) {
+            String tagPattern = "%," + escapeLike(tag).replace(" ", "") + ",%";
+            spec = spec.and((root, query, cb) -> cb.like(
+                cb.concat(cb.concat(",", cb.function("replace", String.class, cb.lower(root.get("tags")), cb.literal(" "), cb.literal(""))), ","), tagPattern, '\\'));
+        }
+        if (featured != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("featured"), featured));
+        if (topProperty != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("topProperty"), topProperty));
+        if (city != null && !city.isBlank()) {
+            if (city.equalsIgnoreCase("Gurugram") || city.equalsIgnoreCase("Gurgaon")) {
+                spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(cb.lower(root.get("city")), "%gurgaon%"), cb.like(cb.lower(root.get("city")), "%gurugram%"),
+                    cb.like(cb.lower(root.get("location")), "%gurgaon%"), cb.like(cb.lower(root.get("location")), "%gurugram%")));
+            } else {
+                String cityPattern = "%" + escapeLike(city) + "%";
+                spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("city")), cityPattern, '\\'));
+            }
+        }
         if (type != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), type));
         }
         if (location != null && !location.isBlank()) {
-            String locationLower = "%" + escapeLike(location) + "%";
+            String locationLower = "% " + escapeLike(normalizeLocation(location)) + " %";
             spec = spec.and((root, query, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("location")), locationLower, '\\'),
-                    cb.like(cb.lower(root.get("city")), locationLower, '\\'),
-                    cb.like(cb.lower(root.get("microMarket")), locationLower, '\\'),
-                    cb.like(cb.lower(root.get("locality")), locationLower, '\\')));
+                    cb.like(cb.concat(cb.concat(" ", normalizeLocation(cb, root.get("location"))), " "), locationLower, '\\'),
+                    cb.like(cb.concat(cb.concat(" ", normalizeLocation(cb, root.get("city"))), " "), locationLower, '\\'),
+                    cb.like(cb.concat(cb.concat(" ", normalizeLocation(cb, root.get("microMarket"))), " "), locationLower, '\\'),
+                    cb.like(cb.concat(cb.concat(" ", normalizeLocation(cb, root.get("locality"))), " "), locationLower, '\\')));
         }
         if (search != null && !search.isBlank()) {
             String searchLower = "%" + escapeLike(search) + "%";
@@ -84,6 +103,21 @@ public class PropertyServiceImpl implements PropertyService {
                 .collect(Collectors.toMap(PropertyLikeRepository.PropertyLikeCount::getPropertyId,
                         PropertyLikeRepository.PropertyLikeCount::getLikeCount));
         return properties.map(property -> toDto(property, likeCounts.getOrDefault(property.getId(), 0L)));
+    }
+
+    private static String normalizeLocation(String value) {
+        String normalized = value.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]+", " ").replace("gurgaon", "gurugram").trim();
+        String[] phases = {"i", "ii", "iii", "iv", "v"};
+        for (int index = 0; index < phases.length; index++) normalized = normalized.replaceAll("\\bphase " + phases[index] + "\\b", "phase " + (index + 1));
+        return normalized;
+    }
+
+    private static Expression<String> normalizeLocation(CriteriaBuilder cb, Expression<String> value) {
+        Expression<String> normalized = cb.function("regexp_replace", String.class, cb.lower(value), cb.literal("[^a-z0-9]+"), cb.literal(" "), cb.literal("g"));
+        normalized = cb.function("replace", String.class, normalized, cb.literal("gurgaon"), cb.literal("gurugram"));
+        String[] phases = {"i", "ii", "iii", "iv", "v"};
+        for (int index = 0; index < phases.length; index++) normalized = cb.function("regexp_replace", String.class, normalized, cb.literal("\\mphase " + phases[index] + "\\M"), cb.literal("phase " + (index + 1)), cb.literal("g"));
+        return normalized;
     }
 
     private static BigDecimal minRentOr(BigDecimal minPrice, BigDecimal minRent) {
@@ -138,10 +172,29 @@ public class PropertyServiceImpl implements PropertyService {
         dto.setImageUrl(property.getImageUrl());
         dto.setImageGallery(property.getImageGallery());
         dto.setBrochureUrl(property.getBrochureUrl());
+        dto.setCoverImage(property.getCoverImage());
+        dto.setTagline(property.getTagline());
+        dto.setEyebrow(property.getEyebrow());
+        dto.setDeveloperName(property.getDeveloperName());
+        dto.setDeveloperLogo(property.getDeveloperLogo());
+        dto.setProjectStatus(property.getProjectStatus());
+        dto.setAccentColor(property.getAccentColor());
+        dto.setThemeDark(property.getThemeDark());
+        dto.setThemeDarker(property.getThemeDarker());
+        dto.setThemeLight(property.getThemeLight());
+        dto.setThemeName(property.getThemeName());
+        dto.setGalleryImages(property.getGalleryImages());
+        dto.setFloorPlans(property.getFloorPlans());
+        dto.setBrochureFileSize(property.getBrochureFileSize());
+        dto.setBrochureSourceUrl(property.getBrochureSourceUrl());
+        dto.setBrochurePreviewImage(property.getBrochurePreviewImage());
+        dto.setReraNumber(property.getReraNumber());
+        dto.setRegistrationsText(property.getRegistrationsText());
         dto.setBedrooms(property.getBedrooms());
         dto.setBathrooms(property.getBathrooms());
         dto.setSqft(property.getSqft());
         dto.setFeatured(property.isFeatured());
+        dto.setTopProperty(property.isTopProperty());
         dto.setBuildingType(property.getBuildingType());
         dto.setPropertyCategory(property.getPropertyCategory());
         dto.setCity(property.getCity());

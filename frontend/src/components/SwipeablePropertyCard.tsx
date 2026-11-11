@@ -31,7 +31,7 @@ export default function SwipeablePropertyCard({
   const router = useRouter();
   const controls = useAnimation();
   const [isDragging, setIsDragging] = useState(false);
-  const { addToCompare, compareItems } = useCompare();
+  const { addToCompare, removeFromCompare, compareItems } = useCompare();
   
   const isCompared = compareItems.some((p) => p.id === property.id);
 
@@ -149,6 +149,10 @@ export default function SwipeablePropertyCard({
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2 bg-white px-8 pt-4">
+        {property.topProperty && <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700">Top property</span>}
+        {property.tags?.split(",").some((tag) => tag.trim().toLowerCase() === "newly added") && <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Newly added</span>}
+      </div>
       {/* Details Container */}
       <div className="p-8 flex flex-col justify-between grow bg-white">
         <div>
@@ -200,10 +204,13 @@ export default function SwipeablePropertyCard({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            if (!isCompared) addToCompare(property);
+            if (isCompared && property.id !== undefined) removeFromCompare(property.id);
+            else addToCompare(property);
           }}
           className={`bg-black/40 backdrop-blur-md rounded-full p-3 text-white transition-all hover:bg-gold ${isCompared ? 'bg-gold' : ''}`}
           title={isCompared ? "Added to compare" : "Compare"}
+          aria-label={`${isCompared ? "Remove" : "Add"} ${property.title} ${isCompared ? "from" : "to"} comparison`}
+          aria-pressed={isCompared}
         >
           <Scale size={18} />
         </button>

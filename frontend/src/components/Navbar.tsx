@@ -61,7 +61,7 @@ export default function Navbar() {
           />
         </Link>
 
-        <div className={`hidden md:flex items-center gap-8 text-gray-800`}>
+        <div className={`hidden xl:flex items-center gap-5 text-gray-800`}>
           <Link
             href="/buy"
             className="text-sm uppercase tracking-widest hover:text-gold transition-colors font-medium"
@@ -94,6 +94,8 @@ export default function Navbar() {
           >
             Blogs
           </Link>
+
+          <Link href="/top-properties" className="text-sm uppercase tracking-widest hover:text-gold transition-colors font-medium">Top Properties</Link>
 
           {/* Heart icon for liked properties — badge always shows a live
               count (including "0") so it never looks broken. */}
@@ -145,7 +147,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className={`md:hidden text-accent-dark`}
+          className={`xl:hidden text-accent-dark`}
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -222,6 +224,7 @@ export default function Navbar() {
               {isClient && user ? "My Account" : "Login / Sign Up"}
             </Link>
 
+            <Link href="/top-properties" onClick={() => setIsOpen(false)} className="text-xl text-white font-syne hover:text-gold">Top Properties</Link>
             <div className="flex gap-5 mt-5">
               <Link
                 href="https://instagram.com"

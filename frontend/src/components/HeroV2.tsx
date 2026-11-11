@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import HeroSvgAnimation from "@/components/HeroSvgAnimation";
 import HeroSearch from "@/components/HeroSearch";
+import PropertyRecommender from "@/components/PropertyRecommender";
 
 export default function HeroV2() {
   const [activeTab, setActiveTab] = useState("buy");
@@ -75,6 +76,9 @@ export default function HeroV2() {
 
           <div className="w-full relative z-20 mt-6 md:mt-12">
             <HeroSearch onTabChange={setActiveTab} />
+            <div className="mt-4 px-1.5">
+              <PropertyRecommender />
+            </div>
           </div>
         </motion.div>
 

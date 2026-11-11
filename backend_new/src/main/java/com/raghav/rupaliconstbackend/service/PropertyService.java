@@ -21,7 +21,11 @@ public interface PropertyService {
             String location,
             String search,
             String propertyCategory,
-            Integer minBedrooms
+            Integer minBedrooms,
+            String city,
+            Boolean featured,
+            Boolean topProperty,
+            String tag
     );
     PropertyResponseDTO getAvailableProperty(Long id);
 
