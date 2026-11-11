@@ -87,6 +87,8 @@ const MAPPLS_URL = "/api/mappls-search";
 // coordinates, no structured address tokens). So we rely on the `location`
 // bias param + client-side state filtering only.
 const MAPPLS_LOCATION = "28.6139,77.2090";
+const GURUGRAM_LOCATION = "28.4595,77.0266";
+const GURUGRAM_NAMES = new Set(["gurugram", "gurgaon"]);
 
 const MAX_RESULTS = 8;
 
@@ -252,6 +254,7 @@ interface LocationAutocompleteProps {
   name?: string;
   required?: boolean;
   disabled?: boolean;
+  gurugramOnly?: boolean;
   inputClassName?: string;
   containerClassName?: string;
 }
@@ -287,6 +290,7 @@ export default function LocationAutocomplete({
   name,
   required,
   disabled,
+  gurugramOnly = false,
   inputClassName,
   containerClassName,
 }: LocationAutocompleteProps) {
@@ -324,7 +328,7 @@ export default function LocationAutocomplete({
 
     const params = new URLSearchParams();
     params.set("query", q);
-    params.set("location", MAPPLS_LOCATION);
+    params.set("location", gurugramOnly ? GURUGRAM_LOCATION : MAPPLS_LOCATION);
 
     fetch(`${MAPPLS_URL}?${params.toString()}`, { signal: controller.signal })
       .then((res) => {
@@ -338,7 +342,8 @@ export default function LocationAutocomplete({
         const filtered: LocationResult[] = [];
 
         for (const loc of locations) {
-          if (!ALLOWED_TYPES.has(normalize(loc.type || ""))) continue;
+          const type = normalize(loc.type || "");
+          if (!ALLOWED_TYPES.has(type) && !(gurugramOnly && type === "poi")) continue;
 
           const state = resolveState(loc);
           if (!state) continue;
@@ -351,6 +356,8 @@ export default function LocationAutocomplete({
           seen.add(key);
 
           const city = resolveCity(loc, state);
+          if (gurugramOnly && !GURUGRAM_NAMES.has(normalize(city)) &&
+              !(type === "city" && GURUGRAM_NAMES.has(normalize(name)))) continue;
           const lat = Number(loc.latitude);
           const lng = Number(loc.longitude);
           const addressParts = parseAddressParts(loc.placeAddress);
@@ -385,7 +392,7 @@ export default function LocationAutocomplete({
       cancelled = true;
       controller.abort();
     };
-  }, [debouncedValue]);
+  }, [debouncedValue, gurugramOnly]);
 
   // ── Photon (OSM) fallback — kept commented out for quick revert ────────
   //
@@ -471,6 +478,7 @@ export default function LocationAutocomplete({
   const pickResult = (result: LocationResult) => {
     skipNextDebounceRef.current = true;
     onChange(result.label);
+    setDebouncedValue("");
     setResults([]);
     setStatus("idle");
     setOpen(false);
@@ -513,7 +521,8 @@ export default function LocationAutocomplete({
   const showDropdown =
     open &&
     status !== "idle" &&
-    status !== "error" &&
+    (status !== "error" || gurugramOnly) &&
+    value.trim() === debouncedValue.trim() &&
     debouncedValue.trim().length >= MIN_CHARS;
 
   return (
@@ -527,6 +536,7 @@ export default function LocationAutocomplete({
         disabled={disabled}
         placeholder={placeholder}
         onChange={(e) => {
+          skipNextDebounceRef.current = false;
           setOpen(true);
           setHighlightedIndex(-1);
           onChange(e.target.value);
@@ -558,7 +568,13 @@ export default function LocationAutocomplete({
 
           {status === "success" && results.length === 0 && (
             <p className="px-4 py-2.5 text-sm text-gray-400">
-              No matching locations found in Delhi NCR
+              No matching locations found in {gurugramOnly ? "Gurugram" : "Delhi NCR"}
+            </p>
+          )}
+
+          {status === "error" && (
+            <p role="status" className="px-4 py-2.5 text-sm text-gray-600">
+              Live suggestions are unavailable. You can still search by typing a location.
             </p>
           )}
 

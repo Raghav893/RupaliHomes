@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // Proxy for Mappls Autosuggest. Mappls' search API does not send CORS headers,
 // so browsers can't call it directly (net::ERR_FAILED despite a 200). Calling it
 // from this route keeps the request same-origin and hides the API key from the
-// client bundle. Key is server-side only: MAPPLS_API_KEY or NEXT_PUBLIC_MAPPLS_API_KEY.
+// client bundle. MAPPLS_API_KEY takes precedence over the legacy variable.
 const MAPPLS_API_KEY =
   process.env.MAPPLS_API_KEY || process.env.NEXT_PUBLIC_MAPPLS_API_KEY || "";
 const MAPPLS_URL = "https://search.mappls.com/search/places/autosuggest/json";
@@ -33,6 +33,8 @@ export async function GET(request: Request) {
 
   try {
     const res = await fetch(`${MAPPLS_URL}?${params.toString()}`, {
+      headers: { Referer: "https://rupalihomes.com/" },
+      redirect: "error",
       cache: "no-store",
       signal: AbortSignal.timeout(8000),
     });
@@ -44,10 +46,7 @@ export async function GET(request: Request) {
     }
     const data = await res.json();
     return NextResponse.json(data);
-  } catch (error: unknown) {
-    console.error("Mappls autosuggest error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Mappls autosuggest failed";
-    return NextResponse.json({ error: errorMessage }, { status: 502 });
+  } catch {
+    return NextResponse.json({ error: "Mappls autosuggest failed" }, { status: 502 });
   }
 }

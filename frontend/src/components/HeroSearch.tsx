@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import GurugramLocalitySelect from "@/components/GurugramLocalitySelect";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 
 const budgetRanges = {
@@ -143,9 +144,10 @@ export default function HeroSearch({
     // Navigate to buy or rent page with filters
     const target = activeTab === "rent" ? "/rent" : "/buy";
     const params = new URLSearchParams();
-    if (searchQuery) {
-      params.set("q", searchQuery);
-      params.set("location", searchQuery);
+    const query = searchQuery.trim();
+    if (query) {
+      params.set("q", query);
+      params.set("location", query);
     }
     params.set("city", "Gurugram");
     if (selectedCity) params.set("locality", selectedCity);
@@ -214,14 +216,18 @@ export default function HeroSearch({
 
         {/* Main Search Input */}
         <div className="grow w-full relative flex items-center px-2">
-          <Search className="text-gray-400 w-4 h-4 absolute left-3.5" />
-          <input
-            aria-label="Search project or landmark in Gurugram"
+          <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 z-10 h-4 w-4 text-gray-400" />
+          <label htmlFor="hero-location-search" className="sr-only">Search project, locality, or landmark in Gurugram</label>
+          <LocationAutocomplete
+            id="hero-location-search"
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            onKeyDown={(event) => { if (event.key === "Enter") handleSearch(); }}
+            onChange={setSearchQuery}
+            onSelect={({ name }) => setSearchQuery(name)}
+            onEnter={handleSearch}
+            gurugramOnly
             placeholder={placeholders[currentPlaceholderIndex]}
-            className="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
+            containerClassName="w-full min-w-0"
+            inputClassName="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
           />
         </div>
 
