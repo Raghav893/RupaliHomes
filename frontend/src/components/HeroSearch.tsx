@@ -113,7 +113,7 @@ export default function HeroSearch({
     "Search by Project...",
     "Search by Locality...",
     "Search by Landmark...",
-    "Search in Gurugram...",
+    "Search across Delhi NCR...",
   ];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
@@ -149,7 +149,7 @@ export default function HeroSearch({
       params.set("q", query);
       params.set("location", query);
     }
-    params.set("city", "Gurugram");
+    if (selectedCity) params.set("city", "Gurugram");
     if (selectedCity) params.set("locality", selectedCity);
     
     let rawMinPrice = "";
@@ -217,14 +217,17 @@ export default function HeroSearch({
         {/* Main Search Input */}
         <div className="grow w-full relative flex items-center px-2">
           <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 z-10 h-4 w-4 text-gray-400" />
-          <label htmlFor="hero-location-search" className="sr-only">Search project, locality, or landmark in Gurugram</label>
+          <label htmlFor="hero-location-search" className="sr-only">Search project, locality, or landmark in Delhi NCR</label>
           <LocationAutocomplete
             id="hero-location-search"
             value={searchQuery}
             onChange={setSearchQuery}
-            onSelect={({ name }) => setSearchQuery(name)}
+            onSelect={({ name }) => {
+              setSearchQuery(name);
+              setSelectedCity("");
+            }}
             onEnter={handleSearch}
-            gurugramOnly
+            includeLandmarks
             placeholder={placeholders[currentPlaceholderIndex]}
             containerClassName="w-full min-w-0"
             inputClassName="w-full min-w-0 pl-10 pr-3 py-2.5 min-h-11 md:min-h-0 outline-none text-gray-700 placeholder-gray-400 text-sm text-ellipsis transition-all duration-500"
